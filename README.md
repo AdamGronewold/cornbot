@@ -10,7 +10,7 @@ This package is the software associated with a modified Pioneer 3-AT robot retro
 
 HARDWARE
 
-(https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
+[alt text](https://github.com/[username]/[reponame]/blob/[branch]/image.jpg?raw=true)
 
 The robot has a hardware architecture (at the time of this writing) comprised of a central NVidia Jetson Orin nano, from which all ROS2 nodes are activated. The robot is controlled by communicating serially to peripheral microcontrollers (USB, UART, I2C, SDL/SDA, etc.). In general each subsystem of the robot has an associated microcontroller. Wheel speeds are driven by a Teensy 4.1 paired with 2 L298N Dual H bridge motor drivers. This device has 
 
