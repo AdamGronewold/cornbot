@@ -1,0 +1,18 @@
+#waypoint1
+
+Final Average Latitude: 43.70413256564306, 
+Final Average Longitude: -72.2956549055425
+Final RMS Error: 3.32822488519498e-08 meters
+
+#waypoint2 ~25m away
+Final Average Latitude: 43.70407690542583, 
+Final Average Longitude: -72.2959519327125
+Final RMS Error: 2.9081959205499006e-08 meters
+
+#waypoint3 ~50m away
+Final Average Latitude: 43.704020785432505, 
+Final Average Longitude: -72.29625257756
+Final RMS Error: 4.463843252085357e-08 meters
+
+
+

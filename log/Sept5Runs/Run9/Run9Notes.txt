@@ -1,0 +1,10 @@
+Run 9 Notes:
+
+Date: Sept 5
+Boom Height: Top of robot
+Distance: 65 paces (approx. 1/4 of the field length)
+GPS Data: PySerialClient log files
+GoPro Footage on the chest and boom cameras
+
+
+

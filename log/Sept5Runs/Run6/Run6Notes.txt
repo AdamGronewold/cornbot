@@ -1,0 +1,9 @@
+Run 6 Notes:
+
+Date: Sept 5
+Boom Height: Gray+Yellow Extended
+Distance: 65 paces (approx. 1/4 of the field length)
+GPS Data: PySerialClient log files
+GoPro Footage on the chest and boom cameras, I think the first few are duds
+GPS data appears complete, but the end of the run likely includes many stationary data points
+
