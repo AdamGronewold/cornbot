@@ -39,6 +39,7 @@ setup(
             'init_heading_node = cornbot.initialization_sequence_2024:main',
             'get_waypoint_node = cornbot.set_waypoint:main', 
             'waypoint_nav = cornbot.waypoint_nav1:main',
+            'waypoint_nav2 = cornbot.waypoint_nav2:main',
         ],
     },
 )
