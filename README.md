@@ -1,9 +1,9 @@
-Cornbot
-by: Adam Gronewold at Dartmouth College
-email: Adam.M.Gronewold.TH@Dartmouth.edu
-last updated: July 3rd, 2024
-version: 2.1
-This is a ROS2 package built for a modified Pioneer 3-AT robot to navigate through a cornfield
+Cornbot <br />
+by: Adam Gronewold at Dartmouth College <br />
+email: Adam.M.Gronewold.TH@Dartmouth.edu <br />
+last updated: July 3rd, 2024 <br />
+version: 2.1 <br />
+This is a ROS2 package built for a modified Pioneer 3-AT robot to navigate through a cornfield <br />
 ----------------------------
 PROJECT DESCRIPTION
 This package is the software associated with a modified Pioneer 3-AT robot retrofitted and upgraded to 2024 standards, such that it can navigate through a cornfield. The package is built for ROS2 and can be utilized as a ROS2 package by including it in a standard ROS2 workspace, sourcing the environment and building the package using "colcon build --packages-select cornbot". The package is built as a standalone package that will only work with the Pioneer robot in question. Functionality is a reflection of the engieering and design of the hardware systems on the robot.
