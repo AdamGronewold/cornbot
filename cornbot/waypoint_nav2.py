@@ -8,7 +8,8 @@ import math
 import matplotlib.pyplot as plt  # Ensure this import is included
 
 class WaypointNode(Node):
-
+    #------------------------------
+    # Node and variable initialization
     def __init__(self):
         super().__init__('wps')
         self.subscription = self.create_subscription(PointStamped, 'cornbot/gnss/positioning/lat_lon_stamped_topic', self.update_position_callback,1)
@@ -40,7 +41,12 @@ class WaypointNode(Node):
         self.window = 5 #moving average window of oberservations
         self.last_headings = [None] * self.window #list of last 5 heading estimates
         self.move_ave_heading = None #average of last 5 heading estimates. In motion, the array is replaced at 4 Hz (fully in 1.25 sec).
-    
+
+        self.typ_robot_speed = -0.1 #nominal speed set for the robot in m/s. Negative is forward, positive is backward.
+        self.wheel_base = 0.381  # Example wheel base in meters
+        
+    #------------------------------------------
+    # SUBSCRIBER CALLBACKS
     def update_position_callback(self, msg):
         self.current_lat = msg.point.x
         self.current_lon = msg.point.y
@@ -60,7 +66,7 @@ class WaypointNode(Node):
             self.publish_heading_ave(self.move_ave_heading)
         #self.get_logger().info(f'Received GNSS heading: {self.current_heading} degrees')
     #---------------------------------------------------------------------
-    
+    # FUNCTIONS TO PUBLISH
     def publish_ref_speed(self, right_ref, left_ref):
         speed_command = f'<{right_ref}, {left_ref}>'
         msg = String()
@@ -75,7 +81,7 @@ class WaypointNode(Node):
         self.ave_heading_pub.publish(msg)
     
     #-------------------------------------------------------------------------
-        
+    # HELPER FUNCTIONS    
     def latlon_to_xy(self, lat1, lon1, lat2, lon2):
         R = 6371000  # Radius of Earth in meters
         # Convert latitude and longitude from degrees to radians
@@ -106,6 +112,8 @@ class WaypointNode(Node):
         return R * c      #distance as the crow flies
                 
     #------------------------------------------------------------------------------
+    # STARTUP WIGGLES
+    
     def action_init(self):
     
         #initialize lat, lon
@@ -117,8 +125,8 @@ class WaypointNode(Node):
         self.lon0=self.current_lon
         
         #initialize the heading by getting a dynamic course over ground by moving forward a bit
-        self.driveable=True
-        if self.driveable==True and self.current_heading == None: #if we don't yet have a reference heading from the GNSS node, initialize by moving forward until we do.
+        
+        if self.current_heading == None: #if we don't yet have a reference heading from the GNSS node, initialize by moving forward until we do.
             self.get_logger().info('No current heading. Initializing heading.')
             time.sleep(1)
             #move forward slowly to get an initial heading from the gps/gnss
@@ -142,7 +150,20 @@ class WaypointNode(Node):
             self.get_logger().info(f'Waypoint {i} is ~{waypoint_local} meters away (+x=east, +y=north)')   
         self.get_logger().info("\n-------------------------------------------")
         time.sleep(5)
+    #------------------------------------------------------------
+    # GOAL CHECK
+    def reached_goal(self):
+        dist_2_goal=math.sqrt((abs(self.xr-self.waypoints_local[-1]["x"]))**2 + (abs(self.yr-self.waypoints_local[-1]["y"]))**2)
+        if dist_2_goal<=self.goal_threshold:
+             return True
+        else:
+            return False
         
+        
+    #------------------------------------------------------------
+    # CALCULATE LOOKAHEAD POINT STUFF
+
+    
     def find_active_path_segment(self):
         # 1. Initialize variables to find the segment with the closest point
         self.test_seg_closest_distance = float('inf')  # Set initial closest distance to infinity
@@ -229,9 +250,57 @@ class WaypointNode(Node):
 
         self.get_logger().info(f"Lookahead Point: Lx = {Lx}, Ly = {Ly}")
         self.lookahead_point=(Lx,Ly)
+    #-----------------------------------------------------------------
+    # WHEEL SPEED CALCULATIONS
+    def calculate_wheel_speeds(self):
+        """
+        Calculate left and right wheel speeds to navigate the robot to the lookahead point using inverse kinematics and geometry.
 
+        Returns:
+        - left_speed: float, speed of the left wheel in m/s
+        - right_speed: float, speed of the right wheel in m/s
+        """
+
+        # Retrieve necessary values from the class instance
+        current_position = (self.xr, self.yr)
+        lookahead_point = self.lookahead_point
+        current_heading = self.current_heading
+        robot_speed = self.typ_robot_speed
+        wheel_base = self.wheel_base  # Ensure this attribute is defined in your class
+
+        # Step 1: Calculate the angle to the lookahead point
+        dx = lookahead_point[0] - current_position[0]
+        dy = lookahead_point[1] - current_position[1]
+        angle_to_lookahead = math.atan2(dy, dx)
+
+        # Step 2: Calculate the heading error (difference between current heading and angle to lookahead)
+        heading_error = angle_to_lookahead - current_heading
+
+        # Step 3: Normalize the heading error to the range [-pi, pi]
+        heading_error = (heading_error + math.pi) % (2 * math.pi) - math.pi
+
+        # Step 4: Calculate the radius of the circle (R) the robot is turning on
+        R = abs(dx**2 + dy**2) / (2 * abs(dx * math.sin(current_heading) - dy * math.cos(current_heading)))
+
+        # Step 5: Calculate the linear velocities for the left and right wheels
+        # The left and right wheel velocities can be found using the relationship:
+        # v_left = v_center * (R - L/2) / R
+        # v_right = v_center * (R + L/2) / R
+
+        if heading_error == 0:
+            # If heading error is zero, the robot is moving straight
+            left_speed = robot_speed
+            right_speed = robot_speed
+        else:
+            # Calculate the wheel speeds for turning
+            left_speed = robot_speed * (R - wheel_base / 2) / R
+            right_speed = robot_speed * (R + wheel_base / 2) / R
+
+        return left_speed, right_speed
         
     #---------------------------------------------------------------
+    # PLOTTING STUFF
+    
     def plot_navigation(self):
         # Clear the previous plot
         self.ax.clear()
@@ -310,7 +379,7 @@ class WaypointNode(Node):
             self.action_init()
             self.initialize_plot()
             # Main loop of the Pure Pursuit algorithm
-            while 1: #not self.reached_goal():
+            while not self.reached_goal():
                
                 #"measurement" update
                 rclpy.spin_once(self, timeout_sec=1) #this will update the robots current position (lat, lon) and (x,y) by seeing if messages arrived from the gps node
@@ -320,9 +389,21 @@ class WaypointNode(Node):
                 self.find_look_ahead_point() #set the lookahead point in the direction of the active path segment
                 self.plot_navigation() #plot the information in xy
     
-                #steering_angle = calculate_steering_angle(current_position_xy, lookahead_point)
 
-                #send_steering_command(steering_angle) 
+                # Set and publish the wheel speeds:
+                left_speed, right_speed = self.calculate_wheel_speeds()
+                #self.get_logger().info(f"Set Left Speed: {left_speed} m/s, Set Right Speed: {right_speed} m/s")
+                try:
+                    self.publish_ref_speed(left_speed, right_speed)
+                except Exception as e:
+                    self.publish_ref_speed(0.0, 0.0)
+                    time.sleep(1)
+                    self.get_logger().info(f'Exception as {e}. Shutting down node...')    
+                    self.destroy_node()
+                    rclpy.shutdown()                    
+                
+            self.get_logger().info("Goal Reached. Stopping robot. Time to rest :) ")
+            self.publish_ref_speed(0.0, 0.0)
     #----------------------------------------------------------------------------
   
                      
