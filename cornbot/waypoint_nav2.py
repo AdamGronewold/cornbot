@@ -6,6 +6,9 @@ import time
 from rclpy.clock import Clock #used to synchronize everything to the systemtime
 import math
 import matplotlib.pyplot as plt  # Ensure this import is included
+import matplotlib.patches as patches
+import numpy as np
+from matplotlib.colors import colorConverter
 
 class WaypointNode(Node):
     #------------------------------
@@ -42,7 +45,7 @@ class WaypointNode(Node):
         self.last_headings = [None] * self.window #list of last 5 heading estimates
         self.move_ave_heading = None #average of last 5 heading estimates. In motion, the array is replaced at 4 Hz (fully in 1.25 sec).
 
-        self.typ_robot_speed = -0.1 #nominal speed set for the robot in m/s. Negative is forward, positive is backward.
+        self.typ_robot_speed = -0.2 #nominal speed set for the robot in m/s. Negative is forward, positive is backward.
         self.wheel_base = 0.381  # Example wheel base in meters
         
     #------------------------------------------
@@ -50,14 +53,16 @@ class WaypointNode(Node):
     def update_position_callback(self, msg):
         self.current_lat = msg.point.x
         self.current_lon = msg.point.y
-        self.get_logger().info(f'Current lat,lon: {self.current_lat}, longitude: {self.current_lon}')
+        #self.get_logger().info(f'Current lat,lon: {self.current_lat}, longitude: {self.current_lon}')
         if self.lat0 and self.lon0:
             #robot position from start in meters
             [self.xr, self.yr] = self.latlon_to_xy(self.lat0, self.lon0, self.current_lat, self.current_lon)
-            self.get_logger().info(f'Current x,y (+e,+n in meters): {self.xr}, {self.yr}')
+            self.get_logger().info(f'x_r: {round(self.xr,2)}, y_r: {round(self.yr,2)}')
 
     def update_course_callback(self, msg):
         self.current_heading = msg.point.x
+        theta_cw = self.current_heading
+        self.cur_head_ccw = (90 - theta_cw) % 360
         self.last_headings=[self.current_heading] + self.last_headings[:-1] #update stored values
         #self.get_logger().info(f'Last {self.window} headings: {self.last_headings}')
         if all (type(i) is float for i in self.last_headings):
@@ -195,7 +200,7 @@ class WaypointNode(Node):
                 self.test_segment = ((x1, y1), (x2, y2))  # Update the closest segment
 
         # Log the closest point and segment found
-        self.get_logger().info(f"Closest point on path: {self.test_seg_closest_point}, Test segment: {self.test_segment}")
+        #self.get_logger().info(f"Closest point on path: {self.test_seg_closest_point}, Test segment: {self.test_segment}")
         
 
         # 6. Determine the active segment
@@ -207,7 +212,7 @@ class WaypointNode(Node):
             self.active_segment = ((self.xr, self.yr), self.test_seg_closest_point)  # Set the active segment to the robot's position and the closest point on the closest path
 
         # Log the active segment determined
-        self.get_logger().info(f"Active Segment: {self.active_segment}")
+        #self.get_logger().info(f"Active Segment: {self.active_segment}")
         
     def find_look_ahead_point(self):
         x1, y1 = self.active_segment[0]  # Start of active segment
@@ -248,122 +253,182 @@ class WaypointNode(Node):
         Lx = x1 + t * (x2 - x1)
         Ly = y1 + t * (y2 - y1)
 
-        self.get_logger().info(f"Lookahead Point: Lx = {Lx}, Ly = {Ly}")
+        self.get_logger().info(f"Lx: {round(Lx,2)}, Ly: {round(Ly,2)}")
         self.lookahead_point=(Lx,Ly)
     #-----------------------------------------------------------------
     # WHEEL SPEED CALCULATIONS
     def calculate_wheel_speeds(self):
-        """
-        Calculate left and right wheel speeds to navigate the robot to the lookahead point using inverse kinematics and geometry.
-
-        Returns:
-        - left_speed: float, speed of the left wheel in m/s
-        - right_speed: float, speed of the right wheel in m/s
-        """
-
         # Retrieve necessary values from the class instance
-        current_position = (self.xr, self.yr)
-        lookahead_point = self.lookahead_point
-        current_heading = self.current_heading
-        robot_speed = self.typ_robot_speed
-        wheel_base = self.wheel_base  # Ensure this attribute is defined in your class
+        A = (self.xr, self.yr)  # current position
+        B = self.lookahead_point  # lookahead point
+        theta_h = self.cur_head_ccw  # ranges from [0, 360) from positive x (east)
 
-        # Step 1: Calculate the angle to the lookahead point
-        dx = lookahead_point[0] - current_position[0]
-        dy = lookahead_point[1] - current_position[1]
-        angle_to_lookahead = math.atan2(dy, dx)
+        theta_h_rad = math.radians(theta_h)
 
-        # Step 2: Calculate the heading error (difference between current heading and angle to lookahead)
-        heading_error = angle_to_lookahead - current_heading
+        # Calculate the tangential unit vector from the heading angle (assumed in radians)
+        T_x = math.cos(theta_h_rad)
+        T_y = math.sin(theta_h_rad)
 
-        # Step 3: Normalize the heading error to the range [-pi, pi]
-        heading_error = (heading_error + math.pi) % (2 * math.pi) - math.pi
+        # Calculate the vector from the current position to the lookahead point
+        dx = B[0] - A[0]
+        dy = B[1] - A[1]
 
-        # Step 4: Calculate the radius of the circle (R) the robot is turning on
-        R = abs(dx**2 + dy**2) / (2 * abs(dx * math.sin(current_heading) - dy * math.cos(current_heading)))
+        # Calculate the perpendicular distance from the lookahead point to the tangential vector
+        cross = np.cross((dx, dy), (T_x, T_y))
+        dot_product = np.dot((dx, dy), (T_x, T_y))
+        mag_a = np.linalg.norm((dx, dy))
+        mag_b = np.linalg.norm((T_x, T_y))
+        angle_dif_rad = np.arccos(dot_product / (mag_a * mag_b))
+        angle_dif_deg = np.degrees(angle_dif_rad)
 
-        # Step 5: Calculate the linear velocities for the left and right wheels
-        # The left and right wheel velocities can be found using the relationship:
-        # v_left = v_center * (R - L/2) / R
-        # v_right = v_center * (R + L/2) / R
+        # Calculate the midpoint of the chord AB
+        midpoint = ((A[0] + B[0]) / 2, (A[1] + B[1]) / 2)
 
-        if heading_error == 0:
-            # If heading error is zero, the robot is moving straight
-            left_speed = robot_speed
-            right_speed = robot_speed
+        # Calculate the radius of the circle
+        perpendicular_distance = self.look_ahead_distance/2
+        radius = perpendicular_distance / math.cos(abs(math.radians(90)-angle_dif_rad))
+
+        #if cross > 0 and angle_dif_deg < 90:
+            # Circle center to right of chord AB                  
+        #elif cross > 0 and angle_dif_deg > 90:
+            # Circle center to left of chord AB           
+        #elif cross < 0 and angle_dif_deg < 90:
+            # Circle center to left of chord AB
+        #elif cross < 0 and angle_dif_deg > 90:
+            # Circle center to right of chord AB
+        # Calculate the perpendicular vector to T_x, T_y
+        if cross > 0:
+            perp_vector = (T_y, -T_x)
         else:
-            # Calculate the wheel speeds for turning
-            left_speed = robot_speed * (R - wheel_base / 2) / R
-            right_speed = robot_speed * (R + wheel_base / 2) / R
+            perp_vector = (-T_y, T_x)
+        self.perp_vector=perp_vector
 
-        return left_speed, right_speed
+        center_x = A[0] + radius * perp_vector[0]
+        center_y = A[1] + radius * perp_vector[1]
+
+        #print(f"Radius of the circle: {radius}")
+        #print(f"Circle center: ({center_x}, {center_y})")
+        self.x_c = center_x
+        self.y_c = center_y
+        self.turn_radius = radius
         
+        if radius != 0 and radius < 500:
+            if cross > 0:
+                right = self.typ_robot_speed * (radius + self.wheel_base/2) / radius #turn right
+                left = self.typ_robot_speed * (radius - self.wheel_base/2) / radius 
+            elif cross < 0:
+                right = self.typ_robot_speed * (radius - self.wheel_base/2) / radius #turn left
+                left = self.typ_robot_speed * (radius + self.wheel_base/2) / radius
+        elif radius >= 500:
+            right = self.typ_robot_speed * (radius + self.wheel_base/2) / radius #just pick left
+            left = self.typ_robot_speed * (radius - self.wheel_base/2) / radius
+        else:
+            right=0
+            left=0
+            
+        return left, right
+
     #---------------------------------------------------------------
     # PLOTTING STUFF
     
     def plot_navigation(self):
-        # Clear the previous plot
-        self.ax.clear()
+        if plt.fignum_exists(1):
+            # Clear the previous plot
+            self.ax.clear()
 
-        # Waypoint locations in x, y coordinates
-        wp_xy = self.waypoints_local
+            # Waypoint locations in x, y coordinates
+            wp_xy = self.waypoints_local
 
-        # Current robot location
-        robot_location = (self.xr, self.yr)
+            # Current robot location
+            robot_location = (self.xr, self.yr)
 
-        # Closest point on path (calculated previously in find_active_path_segment)
-        closest_point = self.test_seg_closest_point  # Update this as per your calculation
+            # Closest point on path (calculated previously in find_active_path_segment)
+            closest_point = self.test_seg_closest_point  # Update this as per your calculation
 
-        # Active segment (calculated previously in find_active_path_segment)
-        active_segment = self.active_segment
+            # Active segment (calculated previously in find_active_path_segment)
+            active_segment = self.active_segment
 
-        # Test segment (from find_active_path_segment)
-        test_segment = self.test_segment  # Update this as per your calculation
+            # Test segment (from find_active_path_segment)
+            test_segment = self.test_segment  # Update this as per your calculation
 
-        # Lookahead point
-        lookahead_point = self.lookahead_point
-        if lookahead_point:
-            Lx, Ly = lookahead_point
-            # Lookahead vector
-            lookahead_vector = ([self.xr, Lx], [self.yr, Ly])
+            # Lookahead point
+            lookahead_point = self.lookahead_point
+            if lookahead_point:
+                Lx, Ly = lookahead_point
+                # Lookahead vector
+                lookahead_vector = ([self.xr, Lx], [self.yr, Ly])
+                
+            #------------------------------------------------------------
+                
+            #plot current arc to travel on
+            if self.x_c and self.y_c:
+                fc = colorConverter.to_rgba('yellow', alpha=0.2)
+                circle=patches.Circle((self.x_c, self.y_c), self.turn_radius, edgecolor='orange', facecolor=fc, linewidth=2, label='Current Turning Arc')
+                self.ax.add_patch(circle)
+                self.ax.scatter(self.x_c, self.y_c, color='orange', marker='+', s=100)
+                self.ax.text(self.x_c, self.y_c, f"({self.x_c:.2f}, {self.y_c:.2f})", fontsize=9, verticalalignment='bottom')
+                self.ax.plot([self.xr, self.x_c], [self.yr, self.y_c], color='orange', linewidth=2)
 
-        # Plot waypoints
-        for wp in wp_xy:
-            labels = [text.get_text() for text in self.ax.get_legend().get_texts()] if self.ax.get_legend() else []
-            self.ax.scatter(wp["x"], wp["y"], color='blue', marker='o', label='Waypoint' if 'Waypoint' not in labels else "")
-            self.ax.text(wp["x"], wp["y"], f"({wp['x']:.2f}, {wp['y']:.2f})", fontsize=9, verticalalignment='bottom')
+            # Plot waypoints
+            label=None
+            for wp in wp_xy:
+                if label==None:
+                    label="Waypoints"
+                    self.ax.scatter(wp["x"], wp["y"], color='lime', marker='o', s=100, label=label)
+                    self.ax.text(wp["x"], wp["y"], f"({wp['x']:.2f}, {wp['y']:.2f})", fontsize=9, verticalalignment='bottom')
+                else:
+                    self.ax.scatter(wp["x"], wp["y"], color='lime', marker='o', s=100)
+                    self.ax.text(wp["x"], wp["y"], f"({wp['x']:.2f}, {wp['y']:.2f})", fontsize=9, verticalalignment='bottom')
 
-        # Plot current robot location
-        self.ax.scatter(*robot_location, color='red', marker='x', label='Robot Location')
-        self.ax.text(*robot_location, f"({robot_location[0]:.2f}, {robot_location[1]:.2f})", fontsize=9, verticalalignment='bottom')
+            # Plot current robot location
+            self.ax.scatter(*robot_location, color='red', marker='x', s=200, label='Robot Location')
+            self.ax.text(*robot_location, f"({robot_location[0]:.2f}, {robot_location[1]:.2f})", fontsize=9, verticalalignment='bottom')
 
-        # Plot test segment
-        self.ax.plot([test_segment[0][0], test_segment[1][0]], [test_segment[0][1], test_segment[1][1]], color='red', linestyle='--', label='Test Segment')
+            # Plot test segment
+            self.ax.plot([test_segment[0][0], test_segment[1][0]], [test_segment[0][1], test_segment[1][1]], color='red', linestyle='--', label='Test Path Segment')
 
-        # Plot active segment
-        self.ax.plot([active_segment[0][0], active_segment[1][0]], [active_segment[0][1], active_segment[1][1]], color='green', linestyle='-', linewidth=2, label='Active Segment')
-        self.ax.scatter(*closest_point, color='green', marker='s', label='Closest Point on Path')
-        self.ax.text(*closest_point, f"({closest_point[0]:.2f}, {closest_point[1]:.2f})", fontsize=9, verticalalignment='bottom')
+            # Plot active segment
+            self.ax.plot([active_segment[0][0], active_segment[1][0]], [active_segment[0][1], active_segment[1][1]], color='green', linestyle='-', linewidth=2, label='Active Path Segment')
+            self.ax.scatter(*closest_point, color='green', marker='s', s=100, label='Closest Point on Path')
+            self.ax.text(*closest_point, f"({closest_point[0]:.2f}, {closest_point[1]:.2f})", fontsize=9, verticalalignment='bottom')
 
-        # Plot lookahead point and vector
-        if lookahead_point:
-            self.ax.scatter(Lx, Ly, color='magenta', marker='o', label='Lookahead Point')
-            self.ax.text(Lx, Ly, f"({Lx:.2f}, {Ly:.2f})", fontsize=9, verticalalignment='bottom')
-            self.ax.plot(lookahead_vector[0], lookahead_vector[1], color='magenta', linestyle='-', linewidth=1, label='Lookahead Vector')
+            # Plot lookahead point and vector
+            if lookahead_point:
+                self.ax.scatter(Lx, Ly, color='magenta', marker='o', s=100, label='Lookahead Point')
+                self.ax.text(Lx, Ly, f"({Lx:.2f}, {Ly:.2f})", fontsize=9, verticalalignment='bottom')
+                self.ax.plot(lookahead_vector[0], lookahead_vector[1], color='magenta', linestyle='-', linewidth=3)
+            else:
+                self.ax.text(0,0, "No lookahead point found.", fontsize=9)
+            
+            # Plot unit vector of based on current heading angle. Heading angle is taken clockwise from positive y (north). Here we convert to counterclockwise from positive x (east)
+            theta=math.radians(self.cur_head_ccw)
+            u_x = math.cos(theta)
+            u_y = math.sin(theta)
+            self.ax.quiver(*robot_location, u_x, u_y, angles='xy', scale_units='xy', scale=1, headwidth=2, label='Current Heading', color='purple')
+                      
+            # Adding labels and legend
+            self.ax.set_xlabel('X Coordinate (+x = east)')
+            self.ax.set_ylabel('Y Coordinate (+y = north)')
+            self.ax.set_title('Robot Navigation Visualization')
+            self.ax.legend()
+            self.ax.grid(True)
+            self.ax.axhline(0, color='black', linewidth=0.5)
+            self.ax.axvline(0, color='black', linewidth=0.5)
+        
+            # Set plot limits centered around the current robot location with 10 meters on each axis
+            self.ax.set_xlim(self.xr - 5, self.xr +5)
+            self.ax.set_ylim(self.yr - 5, self.yr +5)
+
+            # Draw the updated plot
+            self.fig.canvas.draw()
+            self.fig.canvas.flush_events()
+
         else:
-            self.ax.text(0,0, "No lookahead point found.", fontsize=9)
-        # Adding labels and legend
-        self.ax.set_xlabel('X Coordinate (+x = east)')
-        self.ax.set_ylabel('Y Coordinate (+y = north)')
-        self.ax.set_title('Robot Navigation Visualization')
-        self.ax.legend()
-        self.ax.grid(True)
-        self.ax.axhline(0, color='black', linewidth=0.5)
-        self.ax.axvline(0, color='black', linewidth=0.5)
-
-        # Draw the updated plot
-        self.fig.canvas.draw()
-        self.fig.canvas.flush_events()
+            self.publish_ref_speed(0.0, 0.0)
+            time.sleep(2)
+            self.get_logger().info(f'Visualizer closed. Shutting down node...')    
+            self.destroy_node()
+            rclpy.shutdown()            
 
     def initialize_plot(self):
         self.fig, self.ax = plt.subplots(figsize=(10, 8))
@@ -380,22 +445,21 @@ class WaypointNode(Node):
             self.initialize_plot()
             # Main loop of the Pure Pursuit algorithm
             while not self.reached_goal():
-               
-                #"measurement" update
-                rclpy.spin_once(self, timeout_sec=1) #this will update the robots current position (lat, lon) and (x,y) by seeing if messages arrived from the gps node
-                
-                #check which waypoint is the waypoint being actively pursued
-                self.find_active_path_segment() #set segment lookahead points at
-                self.find_look_ahead_point() #set the lookahead point in the direction of the active path segment
-                self.plot_navigation() #plot the information in xy
-    
-
-                # Set and publish the wheel speeds:
-                left_speed, right_speed = self.calculate_wheel_speeds()
-                #self.get_logger().info(f"Set Left Speed: {left_speed} m/s, Set Right Speed: {right_speed} m/s")
                 try:
-                    self.publish_ref_speed(left_speed, right_speed)
+                    #"measurement" update
+                    rclpy.spin_once(self, timeout_sec=1) #this will update the robots current position (lat, lon) and (x,y) by seeing if messages arrived from the gps node
+                
+                    #check which waypoint is the waypoint being actively pursued
+                    self.find_active_path_segment() #set segment lookahead points at
+                    self.find_look_ahead_point() #set the lookahead point in the direction of the active path segment
+                
+                    # Set and publish the wheel speeds:
+                    self.left_speed_ref, self.right_speed_ref=self.calculate_wheel_speeds() #m/s
+                    self.plot_navigation() #plot the information in xy
+                    self.publish_ref_speed(self.left_speed_ref, self.right_speed_ref)
+                                        
                 except Exception as e:
+                    
                     self.publish_ref_speed(0.0, 0.0)
                     time.sleep(1)
                     self.get_logger().info(f'Exception as {e}. Shutting down node...')    
