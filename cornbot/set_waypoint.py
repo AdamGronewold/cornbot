@@ -20,7 +20,7 @@ class GpsWaypointCollector(Node):
     def listener_callback(self, msg):
         self.latitudes.append(msg.point.x)
         self.longitudes.append(msg.point.y)
-        self.get_logger().info(f'Received latitude: {msg.point.x}, longitude: {msg.point.y}')
+        #self.get_logger().info(f'Received latitude: {msg.point.x}, longitude: {msg.point.y}')
 
     def calculate_average_and_rms(self):
         avg_lat = np.mean(self.latitudes)
@@ -28,8 +28,6 @@ class GpsWaypointCollector(Node):
         lat_errors = np.array(self.latitudes) - avg_lat
         lon_errors = np.array(self.longitudes) - avg_lon
         rms_error = np.sqrt(np.mean(lat_errors**2 + lon_errors**2))
-        self.get_logger().info(f'Average Latitude: {avg_lat}, Average Longitude: {avg_lon}')
-        self.get_logger().info(f'RMS Error: {rms_error} meters')
         return avg_lat, avg_lon, rms_error
 
 def main(args=None):
@@ -38,7 +36,8 @@ def main(args=None):
     executor = rclpy.executors.SingleThreadedExecutor()
 
     start_time = time.time()
-    while time.time() - start_time < 30:
+    while time.time() - start_time < 60:
+        node.get_logger().info(f'Sampling for {round(60-(time.time()-start_time), 2)} more seconds')
         rclpy.spin_once(node, timeout_sec=0.1)
 
     avg_lat, avg_lon, rms_error = node.calculate_average_and_rms()
