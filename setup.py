@@ -43,6 +43,7 @@ setup(
             'with_feelers = cornbot.waypoint_nav_with_feelers1:main',
             'sub_test = cornbot.subscriber_test:main',
             'with_feelers2 = cornbot.pure_pursuit_with_feelers:main',
+            'simple_feeler_data = cornbot.simple_feeler_data_node_July_25_2024:main',
         ],
     },
 )
