@@ -58,7 +58,7 @@ def generate_launch_description():
             actions=[
                 Node(
 		    package='cornbot',
-		    executable='odom_tf_broadcaster', 
+		    executable='odom_tf_broadcaster2', 
 		    name='odom_tf_broadcaster',       
 		    output='screen',
 		),
