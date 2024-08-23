@@ -1,0 +1,61 @@
+[1.332s] Invoking command in '/home/adamgronewold/ros2_ws/src/cornbot': PYTHONPATH=/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/prefix_override:/home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/cornbot build --build-base /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build install --record /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log --install-scripts $base/lib/cornbot --single-version-externally-managed install_data
+[1.790s] running egg_info
+[1.790s] creating build/cornbot/cornbot.egg-info
+[1.790s] writing build/cornbot/cornbot.egg-info/PKG-INFO
+[1.791s] writing dependency_links to build/cornbot/cornbot.egg-info/dependency_links.txt
+[1.791s] writing entry points to build/cornbot/cornbot.egg-info/entry_points.txt
+[1.791s] writing requirements to build/cornbot/cornbot.egg-info/requires.txt
+[1.791s] writing top-level names to build/cornbot/cornbot.egg-info/top_level.txt
+[1.794s] writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+[1.855s] reading manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+[1.857s] writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+[1.857s] running build
+[1.857s] running build_py
+[1.857s] creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build
+[1.858s] creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib
+[1.858s] creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.858s] copying cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.858s] copying cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.858s] copying cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.859s] copying cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.859s] copying cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.859s] copying cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.998s] copying cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+[1.998s] running install
+[2.000s] running install_lib
+[2.002s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.002s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.002s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.002s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.003s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.003s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.003s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.003s] copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot
+[2.005s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/motor_control_function_2024.py to motor_control_function_2024.cpython-38.pyc
+[2.008s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/motor_control_function.py to motor_control_function.cpython-38.pyc
+[2.009s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/__init__.py to __init__.cpython-38.pyc
+[2.009s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/xbox_teleop.py to xbox_teleop.cpython-38.pyc
+[2.012s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/feeler_function_2024.py to feeler_function_2024.cpython-38.pyc
+[2.014s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/gps_gnss_function_2024.py to gps_gnss_function_2024.cpython-38.pyc
+[2.018s] byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot/set_waypoint.py to set_waypoint.cpython-38.pyc
+[2.019s] running install_data
+[2.020s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index
+[2.020s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index
+[2.020s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages
+[2.020s] copying resource/cornbot -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages
+[2.020s] copying package.xml -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot
+[2.021s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+[2.021s] copying launch/cornbot_launch_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+[2.157s] copying launch/cornbot_launch.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+[2.158s] creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf
+[2.158s] copying urdf/cornbot.urdf -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf
+[2.158s] running install_egg_info
+[2.161s] Copying build/cornbot/cornbot.egg-info to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages/cornbot-0.0.2-py3.8.egg-info
+[2.163s] running install_scripts
+[2.200s] Installing feeler_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+[2.201s] Installing gnss_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+[2.201s] Installing motor_control_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+[2.201s] Installing motor_control_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+[2.201s] Installing xbox_teleop_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+[2.202s] writing list of installed files to '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log'
+[2.259s] Invoked command in '/home/adamgronewold/ros2_ws/src/cornbot' returned '0': PYTHONPATH=/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/prefix_override:/home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.8/site-packages:${PYTHONPATH} /usr/bin/python3 -W ignore:setup.py install is deprecated setup.py egg_info --egg-base build/cornbot build --build-base /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build install --record /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log --install-scripts $base/lib/cornbot --single-version-externally-managed install_data

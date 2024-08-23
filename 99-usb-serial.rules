@@ -1,0 +1,7 @@
+SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="13208780", SYMLINK+="ttyFeeler"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="13475110", SYMLINK+="ttyMotorController"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="1546", ATTRS{idProduct}=="01a9", ATTRS{product}=="u-blox GNSS receiver", SYMLINK+="ttyGNSSReceiver"
+
+SUBSYSTEM=="tty", ATTRS{idVendor}=="16c0", ATTRS{idProduct}=="0483", ATTRS{serial}=="7986380", SYMLINK+="ttyIMU" 
