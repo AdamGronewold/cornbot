@@ -1,7 +1,0 @@
-[console_scripts]
-feeler_node2 = cornbot.feeler_function_2024:main
-gnss_node2 = cornbot.gps_gnss_function_2024:main
-motor_control_node = cornbot.motor_control_function:main
-motor_control_node2 = cornbot.motor_control_function_2024:main
-xbox_teleop_node = cornbot.xbox_teleop:main
-

@@ -63,7 +63,7 @@ class OdomTfBroadcaster(Node):
 
             t.transform.translation.x = self.current_x
             t.transform.translation.y = self.current_y
-            t.transform.translation.z = 0.0
+            t.transform.translation.z = 0.0762
 
             q = self.euler_to_quaternion(0, 0, math.radians(self.current_heading))
             t.transform.rotation.x = q[0]
