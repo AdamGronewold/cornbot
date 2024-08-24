@@ -41,7 +41,7 @@ setup(
             'odom_tf_broadcaster = cornbot.odom_tf_broadcaster:main',
             'odom_tf_broadcaster2 = cornbot.odom_tf_broadcaster2:main',
             'feeler_state_node = cornbot.feeler_contact_state_id:main',
-            #'feeler_localization = cornbot.feeler_localization:main',
+            'feeler_localization = cornbot.feeler_localization:main',
             #'feeler_plot = cornbot.feeler_state_plotter:main',
             #'imu_node2 = cornbot.imu_node_2024:main',
             #'init_heading_node = cornbot.initialization_sequence_2024:main',

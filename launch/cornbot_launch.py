@@ -43,7 +43,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=3.0,
+            period=6.0,
             actions=[
                 Node(
                     package='cornbot',
@@ -54,7 +54,7 @@ def generate_launch_description():
             ]
         ),
         TimerAction(
-            period=4.0,
+            period=8.0,
             actions=[
                 Node(
 		    package='cornbot',
@@ -65,7 +65,7 @@ def generate_launch_description():
             ]
         ),
         TimerAction(
-            period=5.0,
+            period=10.0,
             actions=[
                 Node(
                     package='robot_state_publisher',
@@ -75,10 +75,34 @@ def generate_launch_description():
                     parameters=[{'robot_description': urdf_content}],
                 ),
             ]
+        ),      
+
+        TimerAction(
+            period=12.0,
+            actions=[
+                Node(
+                    package='cornbot',
+                    executable='feeler_state_node',
+                    name='feeler_contact_id',
+                    output='screen',
+                ),
+            ]
         ),
 
         TimerAction(
-            period=6.0,
+            period=14.0,
+            actions=[
+                Node(
+                    package='cornbot',
+                    executable='feeler_localization',
+                    name='feeler_localization',
+                    output='screen'
+                ),
+            ]
+        ),
+
+        TimerAction(
+            period=16.0,
             actions=[
                 Node(
                     package='rviz2',
