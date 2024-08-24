@@ -93,13 +93,15 @@ class FeelerLocalization(Node):
     def estimate_values(self, side, stamp):
         if side == "left":
             contact_state = self.left_contact_state
-            angle = -self.left_angle
+            angle = self.left_angle
+            mount_angle=math.radians(90)
             angle_history = self.left_angle_history
             y_del_t = self.left_y_del_t
             sensor_frame = "left_sensor"
         else:
             contact_state = self.right_contact_state
             angle = self.right_angle
+            mount_angle=math.radians(-90)
             angle_history = self.right_angle_history
             y_del_t = self.right_y_del_t
             sensor_frame = "right_sensor"
@@ -133,7 +135,7 @@ class FeelerLocalization(Node):
                     speed_estimate = 0.2  # Placeholder; replace with -v_sensor_x for actual use
 
                     # Estimation of D, P, and H using the updated speed estimate
-                    D_hat = (speed_estimate * y_del_t * cos_theta_k * cos_theta_k_minus_1) / abs(sin_theta_diff)
+                    D_hat = abs(speed_estimate * y_del_t * cos_theta_k * cos_theta_k_minus_1) / abs(sin_theta_diff)
                     P_hat_k = D_hat * math.tan(theta_k)
                     H_hat_k = D_hat / math.cos(theta_k)
 
@@ -143,7 +145,7 @@ class FeelerLocalization(Node):
                     self.H_hat = H_hat_k
 
                     # Check if H_hat exceeds the paddle length
-                    if self.H_hat > self.paddle_length + 0.01:
+                    if abs(self.H_hat) > self.paddle_length + 0.01 or self.D_hat<0.0:
                         self.D_hat = float('nan')
                         self.P_hat = float('nan')
                         self.H_hat = float('nan')
@@ -151,10 +153,16 @@ class FeelerLocalization(Node):
 
                     # Localization in the sensor frame
                     plant_localization_in_sensor_frame = [self.D_hat, self.P_hat, 1]
-
-                    # Estimate plant localization in the robot frame
-                    plant_in_robot_frame = [d_x + plant_localization_in_sensor_frame[0], d_y + plant_localization_in_sensor_frame[1], 1]
-
+                    T = [
+                        [math.cos(mount_angle), -math.sin(mount_angle), d_x],
+                        [math.sin(mount_angle), math.cos(mount_angle), d_y],
+                        [0, 0, 1]
+                    ]
+                    plant_in_robot_frame = [
+                        T[0][0] * plant_localization_in_sensor_frame[0] + T[0][1] * plant_localization_in_sensor_frame[1] + T[0][2],
+                        T[1][0] * plant_localization_in_sensor_frame[0] + T[1][1] * plant_localization_in_sensor_frame[1] + T[1][2],
+                        1
+                    ]
                     # Transformation from robot base to the global frame
                     trans_global = self.tf_buffer.lookup_transform('odom', 'base_link', rclpy.time.Time())  # Using the latest available time
 

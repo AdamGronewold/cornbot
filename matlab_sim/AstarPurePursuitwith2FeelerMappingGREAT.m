@@ -1368,7 +1368,7 @@ function sensor = estimate_values(sensor, robot)
             
             % Estimation of D, P, and H using the updated speed estimate
             D_hat = (speed_estimate * sensor.y_del_t * cos_theta_k * cos_theta_k_minus_1) / abs(sin_theta_diff);
-            P_hat_k = D_hat * tan(theta_k);
+            P_hat_k = -D_hat * tan(theta_k);
             H_hat_k = D_hat / cos(theta_k);
 
             % Store estimates
