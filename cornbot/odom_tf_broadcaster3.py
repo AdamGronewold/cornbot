@@ -1,10 +1,9 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import TransformStamped
-from geometry_msgs.msg import PoseStamped
-from tf2_ros import TransformBroadcaster
-from std_msgs.msg import String
-from geometry_msgs.msg import PointStamped
+from geometry_msgs.msg import TransformStamped, PoseStamped, PointStamped, Quaternion
+from sensor_msgs.msg import Imu
+from tf2_ros import TransformBroadcaster, TransformListener, Buffer
+import tf2_ros
 import math
 
 class OdomTfBroadcaster(Node):
@@ -22,9 +21,14 @@ class OdomTfBroadcaster(Node):
         # TF Broadcaster
         self.tf_broadcaster = TransformBroadcaster(self)
 
+        # TF Buffer and Listener for transforming IMU data
+        self.tf_buffer = Buffer()
+        self.tf_listener = TransformListener(self.tf_buffer, self)
+
         # Subscribers for GNSS data
         self.create_subscription(PointStamped, 'gnss/positioning/lat_lon_stamped_topic', self.update_position_callback, 1)
-        self.create_subscription(PointStamped, 'gnss/positioning/course_over_ground', self.update_heading_callback, 1)
+        # IMU subscriber
+        self.create_subscription(Imu, 'imu/data', self.update_imu_callback, 10)
 
         # Publisher for the robot's current pose
         self.pose_pub = self.create_publisher(PoseStamped, 'gnss/tf_pose', 10)
@@ -49,18 +53,30 @@ class OdomTfBroadcaster(Node):
 
         self.current_x, self.current_y = self.latlon_to_xy(self.initial_lat, self.initial_lon, msg.point.x, msg.point.y)
 
-    def update_heading_callback(self, msg):
-        self.current_heading = msg.point.x
-        self.current_heading = (90 - self.current_heading) % 360
+    def update_imu_callback(self, msg: Imu):
+        roll, pitch, yaw = self.quaternion_to_euler(msg.orientation.x, msg.orientation.y, msg.orientation.z, msg.orientation.w)
+
+        print(f'Roll: {math.degrees(roll):.2f}, Pitch: {math.degrees(pitch):.2f}, Yaw: {math.degrees(yaw):.2f}')
+
+        try:
+            corrected_quaternion = Quaternion(
+                    x=-msg.orientation.x,
+                    y=msg.orientation.y,
+		            z=msg.orientation.z,
+                    w=msg.orientation.w
+         	)           	
+		
+            self.current_heading = corrected_quaternion
+
+        except (tf2_ros.LookupException, tf2_ros.ConnectivityException, tf2_ros.ExtrapolationException) as e:
+            self.get_logger().error(f"Failed to use IMU data: {e}")
 
     def broadcast_transform(self):
-        #print(f"{self.current_x}, {self.current_y}, {self.current_heading}")
         if self.current_x is not None and self.current_y is not None:
             if self.current_heading is None:
-                self.current_heading=0.0
-            # Create TransformStamped message
-            t = TransformStamped()
+                self.current_heading = Quaternion()
 
+            t = TransformStamped()
             t.header.stamp = self.get_clock().now().to_msg()
             t.header.frame_id = 'odom'
             t.child_frame_id = 'base_link'
@@ -69,25 +85,17 @@ class OdomTfBroadcaster(Node):
             t.transform.translation.y = self.current_y
             t.transform.translation.z = 0.0762
 
-            q = self.euler_to_quaternion(0, 0, math.radians(self.current_heading))
-            t.transform.rotation.x = q[0]
-            t.transform.rotation.y = q[1]
-            t.transform.rotation.z = q[2]
-            t.transform.rotation.w = q[3]
+            # Apply the current_heading directly from the IMU
+            t.transform.rotation = self.current_heading
 
-            # Broadcast the transform
             self.tf_broadcaster.sendTransform(t)
 
-            # Publish the current pose
             pose_msg = PoseStamped()
             pose_msg.header = t.header
             pose_msg.pose.position.x = self.current_x
             pose_msg.pose.position.y = self.current_y
             pose_msg.pose.position.z = 0.0
-            pose_msg.pose.orientation.x = t.transform.rotation.x
-            pose_msg.pose.orientation.y = t.transform.rotation.y
-            pose_msg.pose.orientation.z = t.transform.rotation.z
-            pose_msg.pose.orientation.w = t.transform.rotation.w
+            pose_msg.pose.orientation = self.current_heading
 
             self.pose_pub.publish(pose_msg)
 
@@ -112,13 +120,32 @@ class OdomTfBroadcaster(Node):
         y = delta_lat * R
 
         return x, y
+   
+    def quaternion_to_euler(self, x, y, z, w):     
+        """
+        Convert a quaternion into Euler angles (roll, pitch, yaw)
+        Roll is rotation around x in radians (counterclockwise)
+        Pitch is rotation around y in radians (counterclockwise)
+        Yaw is rotation around z in radians (counterclockwise)
+        """
+        # Roll (x-axis rotation)
+        sinr_cosp = 2 * (w * x + y * z)
+        cosr_cosp = 1 - 2 * (x * x + y * y)
+        roll = math.atan2(sinr_cosp, cosr_cosp)
 
-    def euler_to_quaternion(self, roll, pitch, yaw):
-        qx = math.sin(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) - math.cos(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
-        qy = math.cos(roll/2) * math.sin(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.cos(pitch/2) * math.sin(yaw/2)
-        qz = math.cos(roll/2) * math.cos(pitch/2) * math.sin(yaw/2) - math.sin(roll/2) * math.sin(pitch/2) * math.cos(yaw/2)
-        qw = math.cos(roll/2) * math.cos(pitch/2) * math.cos(yaw/2) + math.sin(roll/2) * math.sin(pitch/2) * math.sin(yaw/2)
-        return [qx, qy, qz, qw]
+        # Pitch (y-axis rotation)
+        sinp = 2 * (w * y - z * x)
+        if abs(sinp) >= 1:
+            pitch = math.copysign(math.pi / 2, sinp)  # use 90 degrees if out of range
+        else:
+            pitch = math.asin(sinp)
+
+        # Yaw (z-axis rotation)
+        siny_cosp = 2 * (w * z + x * y)
+        cosy_cosp = 1 - 2 * (y * y + z * z)
+        yaw = math.atan2(siny_cosp, cosy_cosp)
+
+        return roll, pitch, yaw
 
 def main(args=None):
     rclpy.init(args=args)

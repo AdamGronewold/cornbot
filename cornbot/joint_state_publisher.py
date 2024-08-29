@@ -11,10 +11,11 @@ import math
 class WheelAndSensorJointPublisher(Node):
     def __init__(self):
         super().__init__('wheel_and_sensor_joint_publisher')
+        self.get_logger().info('Joint state publisher started.\n')
         self.publisher = self.create_publisher(JointState, 'joint_states', 10)
         self.feeler_sub = self.create_subscription(
-            QuaternionStamped, 'cornbot/feeler/angles', self.feeler_angle_callback,  1)
-        self.wheel_speed_sub = self.create_subscription(PointStamped, 'cornbot/wheel_rpm_left_right', self.wheel_rpm_callback, 1)
+            QuaternionStamped, 'feeler/angles', self.feeler_angle_callback,  1)
+        self.wheel_speed_sub = self.create_subscription(PointStamped, 'wheel_rpm_left_right', self.wheel_rpm_callback, 1)
         
         self.last_time=self.get_clock().now()
         self.left_wheel_angle=0.0

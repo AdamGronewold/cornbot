@@ -39,7 +39,7 @@ setup(
             'motor_control_node2 = cornbot.motor_control_function_2024:main',
             'joint_state_node = cornbot.joint_state_publisher:main',
             'odom_tf_broadcaster = cornbot.odom_tf_broadcaster:main',
-            'odom_tf_broadcaster2 = cornbot.odom_tf_broadcaster2:main',
+            'odom_tf_broadcaster2 = cornbot.odom_tf_broadcaster2_copy:main',
             'feeler_state_node = cornbot.feeler_contact_state_id:main',
             'feeler_localization = cornbot.feeler_localization:main',
             #'feeler_plot = cornbot.feeler_state_plotter:main',

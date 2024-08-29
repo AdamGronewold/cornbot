@@ -7,16 +7,16 @@ import numpy as np
 class FeelerStateIdentificationNode(Node):
     def __init__(self):
         super().__init__('feeler_state_identification')
-        self.subscription_left = self.create_subscription(QuaternionStamped, 'cornbot/feeler/left_state', self.left_callback, 3)
-        self.subscription_right = self.create_subscription(QuaternionStamped, 'cornbot/feeler/right_state', self.right_callback, 3)
+        self.subscription_left = self.create_subscription(QuaternionStamped, 'feeler/left_state', self.left_callback, 3)
+        self.subscription_right = self.create_subscription(QuaternionStamped, 'feeler/right_state', self.right_callback, 3)
         
         # Publishers for left and right states
-        self.publisher_left_state = self.create_publisher(KeyValue, 'cornbot/feeler/left_contact_state', 3)
-        self.publisher_right_state = self.create_publisher(KeyValue, 'cornbot/feeler/right_contact_state', 3)
+        self.publisher_left_state = self.create_publisher(KeyValue, 'feeler/left_contact_state', 3)
+        self.publisher_right_state = self.create_publisher(KeyValue, 'feeler/right_contact_state', 3)
         
         # Numerical state publishers
-        self.publisher_left_state_numerical = self.create_publisher(QuaternionStamped, 'cornbot/feeler/left_contact_state_numerical', 3)
-        self.publisher_right_state_numerical = self.create_publisher(QuaternionStamped, 'cornbot/feeler/right_contact_state_numerical', 3)
+        self.publisher_left_state_numerical = self.create_publisher(QuaternionStamped, 'feeler/left_contact_state_numerical', 3)
+        self.publisher_right_state_numerical = self.create_publisher(QuaternionStamped, 'feeler/right_contact_state_numerical', 3)
         
         self.classifier_window = 5
         self.left_state = "Unknown State"

@@ -24,12 +24,12 @@ class MotorControlNode(Node):
         
         #create the subscription to the "topic" topic watching for String messages, 
         #with 10 message buffer and callback to our subscriber callback function named "listener_callback"
-        self.subscription1 = self.create_subscription(String, 'cornbot/speed_ref_topic', self.send_speed_ref_callback, 5)
+        self.subscription1 = self.create_subscription(String, 'speed_ref_topic', self.send_speed_ref_callback, 5)
         
         #create publishers to provide ROS system with knowledge of the robots wheel speeds
         #with callback timer to read data from teensy
-        self.publisher1 = self.create_publisher(Float32, 'cornbot/wheel_rpm_left', 1)
-        self.publisher2 = self.create_publisher(Float32, 'cornbot/wheel_rpm_right', 1)
+        self.publisher1 = self.create_publisher(Float32, 'wheel_rpm_left', 1)
+        self.publisher2 = self.create_publisher(Float32, 'wheel_rpm_right', 1)
         timer_period = 0.001  # seconds
         self.timer = self.create_timer(timer_period, self.pub_wheel_speeds_callback)
         

@@ -34,6 +34,33 @@
     </inertial>
   </link>
   
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.02 0.01"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.02 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0.5 0 0.2268" rpy="0 0 0"/>
+  </joint>
+ 
+ 
+  
+  
   <!-- Joint between odom and base_link (static) -->
   <joint name="odom_to_base_link" type="fixed">
     <parent link="odom"/>
@@ -89,7 +116,7 @@
   </joint>
   
   <!-- GPS Antenna -->
-  <link name="gps_antenna">
+  <link name="gnss">
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
@@ -111,9 +138,9 @@
     </inertial>
   </link>
   
-  <joint name="gps_mount_to_sensor_mount" type="fixed">
+  <joint name="gnss_mount_to_sensor_mount" type="fixed">
     <parent link="sensor_mount"/>
-    <child link="gps_antenna"/>
+    <child link="gnss"/>
     <origin xyz="-0.04 0 0.7112" rpy="0 0 0"/>
   </joint>
   

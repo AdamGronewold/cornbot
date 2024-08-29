@@ -18,6 +18,7 @@ class OdomTfBroadcaster(Node):
         self.current_x = None
         self.current_y = None
         self.current_heading = None
+        self.fix_string = 'Fix Quality Unknown'
 
         # TF Broadcaster
         self.tf_broadcaster = TransformBroadcaster(self)
@@ -25,6 +26,9 @@ class OdomTfBroadcaster(Node):
         # Subscribers for GNSS data
         self.create_subscription(PointStamped, 'gnss/positioning/lat_lon_stamped_topic', self.update_position_callback, 1)
         self.create_subscription(PointStamped, 'gnss/positioning/course_over_ground', self.update_heading_callback, 1)
+        self.create_subscription(String, 'gnss/status/fix_quality_topic', self.fix_quality_callback, 5)
+        #self.create_subscription(PointStamped, 'wheel_rpm_left_right', self.wheel_rpm_callback, 5)
+        self.gnss_speed_pub_watchdog = self.create_publisher(String, 'cornbot/speed_ref_topic', 1)
 
         # Publisher for the robot's current pose
         self.pose_pub = self.create_publisher(PoseStamped, 'gnss/tf_pose', 10)
@@ -33,6 +37,31 @@ class OdomTfBroadcaster(Node):
         self.startup_pose_pub = self.create_publisher(PointStamped, 'gnss/startup_pose', 10)
 
         self.timer = self.create_timer(0.001, self.broadcast_transform)
+        self.create_timer(0.25, self.gnss_watchdog)
+
+    def gnss_watchdog(self):
+        if self.fix_string in ('Fix not valid', 'Type 3, Not Applicable', 'INU Dead reckoning', 'Fix Quality Unknown'):
+            speed_ref_msg = String()
+            speed_ref_msg.data = '<0.0, 0.0>'
+            self.gnss_speed_pub_watchdog.publish(speed_ref_msg)  # publish the message
+            self.get_logger().info(f'Stopping robot with fix type: {self.fix_string}')
+            # Stop broadcasting the transform
+            self.timer.cancel()
+
+        elif self.fix_string in ('RTK Float, OmniSTAT XP/HP, Location RTK, RTX', 'GPS Fix', 'Differential GPS by SBAS'):
+            # Continue broadcasting the transform as in the current approach
+            if self.timer.is_canceled():
+                self.timer = self.create_timer(0.001, self.broadcast_transform)
+            self.get_logger().info(f'Using GNSS-only approach for fix type: {self.fix_string}')
+
+        elif self.fix_string == 'RTK Fixed, xFill':
+            # Continue broadcasting the transform as in the current approach
+            if self.timer.is_canceled():
+                self.timer = self.create_timer(0.001, self.broadcast_transform)
+            self.get_logger().info(f'Using GNSS odometry for fix type: {self.fix_string}')
+
+    def fix_quality_callback(self, msg):
+        self.fix_string = msg.data
 
     def update_position_callback(self, msg):
         if self.initial_lat is None and self.initial_lon is None:
@@ -54,10 +83,9 @@ class OdomTfBroadcaster(Node):
         self.current_heading = (90 - self.current_heading) % 360
 
     def broadcast_transform(self):
-        #print(f"{self.current_x}, {self.current_y}, {self.current_heading}")
         if self.current_x is not None and self.current_y is not None:
             if self.current_heading is None:
-                self.current_heading=0.0
+                self.current_heading = 0.0
             # Create TransformStamped message
             t = TransformStamped()
 

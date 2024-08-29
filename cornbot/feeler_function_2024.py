@@ -15,11 +15,11 @@ class FeelerNode(Node):
         time.sleep(2)
 
         # Publishers for left and right state
-        self.left_state_publisher = self.create_publisher(QuaternionStamped, 'cornbot/feeler/left_state', 1)
-        self.right_state_publisher = self.create_publisher(QuaternionStamped, 'cornbot/feeler/right_state', 1)
+        self.left_state_publisher = self.create_publisher(QuaternionStamped, 'feeler/left_state', 1)
+        self.right_state_publisher = self.create_publisher(QuaternionStamped, 'feeler/right_state', 1)
 
         # Publisher for combined angles
-        self.angles_publisher = self.create_publisher(QuaternionStamped, 'cornbot/feeler/angles', 1)
+        self.angles_publisher = self.create_publisher(QuaternionStamped, 'feeler/angles', 1)
                 
         # Variables for storing previous values
         self.prev_left_angle = None
@@ -93,7 +93,11 @@ class FeelerNode(Node):
                 
         except KeyboardInterrupt:
             self.get_logger().fatal("\nKeyboard interrupt during serial read of feeler data. Killing node. Closing serial.\n")
+            time.sleep(1)
             self.ser.close()
+            time.sleep(1)
+            self.destroy_node()
+            time.sleep(1)
             exit()
         except UnicodeDecodeError:
             self.get_logger().error("Unicode decode error")
@@ -108,8 +112,11 @@ def main(args=None):
         rclpy.spin(feeler_node)
     except KeyboardInterrupt:
         feeler_node.get_logger().fatal("Keyboard interrupt of ROS2 spin on feeler node. Killing node. Closing serial.")
+        time.sleep(1)
         feeler_node.ser.close()
+        time.sleep(1)
         feeler_node.destroy_node()
+        time.sleep(1)
         rclpy.shutdown()
         exit()
 

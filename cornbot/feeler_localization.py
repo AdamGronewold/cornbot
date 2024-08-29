@@ -19,15 +19,15 @@ class FeelerLocalization(Node):
         self.tf_listener = TransformListener(self.tf_buffer, self)
 
         # Subscribers for left-related topics
-        self.left_contact_sub = Subscriber(self, QuaternionStamped, 'cornbot/feeler/left_contact_state_numerical')
-        self.left_state_sub = Subscriber(self, QuaternionStamped, 'cornbot/feeler/left_state')
+        self.left_contact_sub = Subscriber(self, QuaternionStamped, 'feeler/left_contact_state_numerical')
+        self.left_state_sub = Subscriber(self, QuaternionStamped, 'feeler/left_state')
 
         # Subscribers for right-related topics
-        self.right_contact_sub = Subscriber(self, QuaternionStamped, 'cornbot/feeler/right_contact_state_numerical')
-        self.right_state_sub = Subscriber(self, QuaternionStamped, 'cornbot/feeler/right_state')
+        self.right_contact_sub = Subscriber(self, QuaternionStamped, 'feeler/right_contact_state_numerical')
+        self.right_state_sub = Subscriber(self, QuaternionStamped, 'feeler/right_state')
 
         # Subscriber for wheel speed reference
-        self.wheel_speed_ref_sub = self.create_subscription(String, 'cornbot/speed_ref_topic', self.speed_ref_callback, 1)
+        self.wheel_speed_ref_sub = self.create_subscription(String, 'speed_ref_topic', self.speed_ref_callback, 1)
 
         # Synchronizer for left-related topics
         ats_left = ApproximateTimeSynchronizer([self.left_contact_sub, self.left_state_sub], queue_size=10, slop=0.1)
@@ -38,9 +38,9 @@ class FeelerLocalization(Node):
         ats_right.registerCallback(self.right_synchronized_callback)
 
         # Publishers for each frame
-        self.sensor_frame_pub = self.create_publisher(PointStamped, '/cornbot/plant_localization/sensor_frame', 10)
-        self.robot_frame_pub = self.create_publisher(PointStamped, '/cornbot/plant_localization/robot_frame', 10)
-        self.global_frame_pub = self.create_publisher(PointStamped, '/cornbot/plant_localization/global_frame', 10)
+        self.sensor_frame_pub = self.create_publisher(PointStamped, 'plant_localization/sensor_frame', 10)
+        self.robot_frame_pub = self.create_publisher(PointStamped, 'plant_localization/robot_frame', 10)
+        self.global_frame_pub = self.create_publisher(PointStamped, 'plant_localization/odom_frame', 10)
         self.marker_pub = self.create_publisher(Marker, '/cornbot/plant_marker', 10)
 
         # Initializations
@@ -163,21 +163,45 @@ class FeelerLocalization(Node):
                         T[1][0] * plant_localization_in_sensor_frame[0] + T[1][1] * plant_localization_in_sensor_frame[1] + T[1][2],
                         1
                     ]
-                    # Transformation from robot base to the global frame
-                    trans_global = self.tf_buffer.lookup_transform('odom', 'base_link', rclpy.time.Time())  # Using the latest available time
+                    # Transformation from robot base to the odom frame
+                    trans_odom = self.tf_buffer.lookup_transform('odom', 'base_link', rclpy.time.Time())  # Using the latest available time
 
-                    # Final transformation to global frame
-                    plant_in_global_frame = [trans_global.transform.translation.x + plant_in_robot_frame[0],
-                                             trans_global.transform.translation.y + plant_in_robot_frame[1],
-                                             1]
+                    # Extract the yaw angle from the quaternion (assuming planar motion)
+                    qx = trans_odom.transform.rotation.x
+                    qy = trans_odom.transform.rotation.y
+                    qz = trans_odom.transform.rotation.z
+                    qw = trans_odom.transform.rotation.w
+
+                    # Convert quaternion to a yaw angle (assuming no roll or pitch)
+                    yaw = math.atan2(2.0 * (qw * qz + qx * qy), 1.0 - 2.0 * (qy * qy + qz * qz))
+
+                    # Construct the rotation matrix
+                    T_odom = [
+                        [math.cos(yaw), -math.sin(yaw), trans_odom.transform.translation.x],
+                        [math.sin(yaw),  math.cos(yaw), trans_odom.transform.translation.y],
+                        [0, 0, 1]
+                    ]
+
+                    # Apply the transformation from robot frame to odom frame
+                    plant_in_odom_frame = [
+                        T_odom[0][0] * plant_in_robot_frame[0] + T_odom[0][1] * plant_in_robot_frame[1] + T_odom[0][2],
+                        T_odom[1][0] * plant_in_robot_frame[0] + T_odom[1][1] * plant_in_robot_frame[1] + T_odom[1][2],
+                        1
+                    ]
+
+                    # Final transformation to odom frame
+                    #plant_in_odom_frame = [
+                    #	trans_odom.transform.translation.x + plant_in_robot_frame[0],
+                     #                        trans_odom.transform.translation.y + plant_in_robot_frame[1],
+                      #                       1]
 
                     # Publish the points in each frame
                     self.publish_point(sensor_frame, plant_localization_in_sensor_frame, stamp)
                     self.publish_point("base_link", plant_in_robot_frame, stamp)
-                    self.publish_point("odom", plant_in_global_frame, stamp)
+                    self.publish_point("odom", plant_in_odom_frame, stamp)
 
                     # Publish the marker for RViz visualization
-                    self.publish_plant_marker(plant_in_global_frame, "odom", stamp)
+                    self.publish_plant_marker(plant_in_odom_frame, "odom", stamp)
 
                 except tf2_ros.LookupException:
                     self.get_logger().error("Transform lookup failed")
@@ -230,11 +254,11 @@ class FeelerLocalization(Node):
         marker.pose.orientation.y = 0.0
         marker.pose.orientation.z = 0.0
         marker.pose.orientation.w = 1.0
-        marker.scale.x = 0.1  # Diameter of the cylinder
-        marker.scale.y = 0.1  # Diameter of the cylinder
+        marker.scale.x = 0.03  # Diameter of the cylinder
+        marker.scale.y = 0.03  # Diameter of the cylinder
         marker.scale.z = 3.0  # Height of the cylinder
-        marker.color.a = 1.0  # Alpha (opacity)
-        marker.color.r = 0.0
+        marker.color.a = 0.2  # Alpha (opacity)
+        marker.color.r = 0.1
         marker.color.g = 1.0  # Green color
         marker.color.b = 0.0
 

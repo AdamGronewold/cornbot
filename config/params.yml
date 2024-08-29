@@ -1,0 +1,14 @@
+
+/cornbot/microstrain_inertial_driver:
+  ros__parameters:
+    port : '/dev/microstrain_main'
+    baudrate : 115200
+    frame_id : 'imu_link'  # Frame ID of all of the filter messages. Represents the location of the CV7-INS in the tf tree
+    mount_frame_id     : "base_link"  # Frame ID that the device is mounted on.
+    target_frame_id : "base_link"
+    publish_mount_to_frame_id_transform  : False
+    mount_to_frame_id_transform          : [0.5, 0.0, 0.2268, 0.0, 0.0, 0.0, 1.0] # [ x, y, z, qi, qj, qk, qw ]
+    use_enu_frame : False
+    gnss1_antenna_offset_source : 0
+    gnss2_antenna_offset_source : 0
+
