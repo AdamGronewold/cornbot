@@ -1,12 +1,11 @@
 import rclpy
 from rclpy.node import Node
-from geometry_msgs.msg import QuaternionStamped, TransformStamped, PointStamped
-from std_msgs.msg import Float32, String
+from geometry_msgs.msg import QuaternionStamped, PointStamped
+from std_msgs.msg import String
 from visualization_msgs.msg import Marker
 from message_filters import Subscriber, ApproximateTimeSynchronizer
 import tf2_ros
-from tf2_ros import TransformListener
-from tf2_ros import Buffer
+from tf2_ros import TransformListener, Buffer
 import math
 
 class FeelerLocalization(Node):
@@ -38,10 +37,11 @@ class FeelerLocalization(Node):
         ats_right.registerCallback(self.right_synchronized_callback)
 
         # Publishers for each frame
-        self.sensor_frame_pub = self.create_publisher(PointStamped, 'plant_localization/sensor_frame', 10)
-        self.robot_frame_pub = self.create_publisher(PointStamped, 'plant_localization/robot_frame', 10)
-        self.global_frame_pub = self.create_publisher(PointStamped, 'plant_localization/odom_frame', 10)
-        self.marker_pub = self.create_publisher(Marker, '/cornbot/plant_marker', 10)
+        self.sensor_frame_pub = self.create_publisher(PointStamped, 'plants/localization/sensor_frame', 10)
+        self.robot_frame_pub = self.create_publisher(PointStamped, 'plants/localization/robot_frame', 10)
+        self.odom_frame_pub = self.create_publisher(PointStamped, 'plants/localization/odom_frame', 10)
+        self.map_update_pub = self.create_publisher(PointStamped, 'plants/mapping/odom_frame', 10)
+        self.marker_pub = self.create_publisher(Marker, '/cornbot/plant_marker', 100)
 
         # Initializations
         self.left_contact_state = 0.0
@@ -59,6 +59,16 @@ class FeelerLocalization(Node):
         self.left_y_del_t = 0.008  # the sample period, which changes over time
         self.right_y_del_t = 0.008
 
+        # Initialize history buffers
+        self.left_contact_history = []
+        self.right_contact_history = []
+
+        # Initialize plant localization history in odom frame
+        self.left_plant_in_odom_frame_history = []
+        self.right_plant_in_odom_frame_history = []
+        self.odom_plant_map = []
+        self.row_number = 1
+
     def speed_ref_callback(self, msg):
         speeds = msg.data.strip('<>').split(',')
         self.right_speed = float(speeds[0])
@@ -67,7 +77,11 @@ class FeelerLocalization(Node):
     def left_synchronized_callback(self, contact_msg, state_msg):
         self.left_contact_state = contact_msg.quaternion.x
         self.left_angle = state_msg.quaternion.x
+        
         self.left_angle_history.append(self.left_angle)
+        self.left_contact_history.append(self.left_contact_state)
+        if len(self.left_contact_history) > 200:
+            self.left_contact_history.pop(0)
 
         # Calculate the time difference from the previous message
         current_time = contact_msg.header.stamp.sec + contact_msg.header.stamp.nanosec / 1e9
@@ -81,6 +95,10 @@ class FeelerLocalization(Node):
         self.right_contact_state = contact_msg.quaternion.x
         self.right_angle = state_msg.quaternion.x
         self.right_angle_history.append(self.right_angle)
+        
+        self.right_contact_history.append(self.right_contact_state)
+        if len(self.right_contact_history) > 200:
+            self.right_contact_history.pop(0)
 
         # Calculate the time difference from the previous message
         current_time = contact_msg.header.stamp.sec + contact_msg.header.stamp.nanosec / 1e9
@@ -94,17 +112,19 @@ class FeelerLocalization(Node):
         if side == "left":
             contact_state = self.left_contact_state
             angle = self.left_angle
-            mount_angle=math.radians(90)
+            mount_angle = math.radians(90)
             angle_history = self.left_angle_history
             y_del_t = self.left_y_del_t
             sensor_frame = "left_sensor"
+            plant_in_odom_frame_history = self.left_plant_in_odom_frame_history
         else:
             contact_state = self.right_contact_state
             angle = self.right_angle
-            mount_angle=math.radians(-90)
+            mount_angle = math.radians(-90)
             angle_history = self.right_angle_history
             y_del_t = self.right_y_del_t
             sensor_frame = "right_sensor"
+            plant_in_odom_frame_history = self.right_plant_in_odom_frame_history
 
         # Here you have your conditions to perform the calculations
         if (contact_state == 80.0 or contact_state == 90.0) and len(angle_history) > 1 and y_del_t is not None:
@@ -128,7 +148,7 @@ class FeelerLocalization(Node):
                     # Calculate the velocity of the sensor in the robot frame
                     v_robot = [(self.right_speed + self.left_speed) / 2, 0]  # Average speed in x direction
                     omega_cross_d = [-omega * d_y, omega * d_x]  # Rotational component
-                    
+
                     v_sensor_x = v_robot[0] + omega_cross_d[0]  # X-component of the velocity
 
                     # Speed estimate for localization
@@ -145,10 +165,21 @@ class FeelerLocalization(Node):
                     self.H_hat = H_hat_k
 
                     # Check if H_hat exceeds the paddle length
-                    if abs(self.H_hat) > self.paddle_length + 0.01 or self.D_hat<0.0:
+                    if abs(self.H_hat) > self.paddle_length + 0.01 or self.D_hat < 0.0:
                         self.D_hat = float('nan')
                         self.P_hat = float('nan')
                         self.H_hat = float('nan')
+                        plant_localization_in_sensor_frame = [float('nan'), float('nan'), float('nan')]
+                        plant_in_robot_frame = [float('nan'), float('nan'), float('nan')]
+                        plant_in_odom_frame = [float('nan'), float('nan'), float('nan')]
+                        if side == "left":
+                            self.left_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                            if len(self.left_plant_in_odom_frame_history) > 200:
+                                self.left_plant_in_odom_frame_history.pop(0)
+                        else:
+                            self.right_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                            if len(self.right_plant_in_odom_frame_history) > 200:
+                                self.right_plant_in_odom_frame_history.pop(0)
                         return
 
                     # Localization in the sensor frame
@@ -178,7 +209,7 @@ class FeelerLocalization(Node):
                     # Construct the rotation matrix
                     T_odom = [
                         [math.cos(yaw), -math.sin(yaw), trans_odom.transform.translation.x],
-                        [math.sin(yaw),  math.cos(yaw), trans_odom.transform.translation.y],
+                        [math.sin(yaw), math.cos(yaw), trans_odom.transform.translation.y],
                         [0, 0, 1]
                     ]
 
@@ -189,19 +220,21 @@ class FeelerLocalization(Node):
                         1
                     ]
 
-                    # Final transformation to odom frame
-                    #plant_in_odom_frame = [
-                    #	trans_odom.transform.translation.x + plant_in_robot_frame[0],
-                     #                        trans_odom.transform.translation.y + plant_in_robot_frame[1],
-                      #                       1]
+                    # Append to history and manage size
+                    if side == "left":
+                        self.left_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                        if len(self.left_plant_in_odom_frame_history) > 200:
+                            self.left_plant_in_odom_frame_history.pop(0)
+                    else:
+                        self.right_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                        if len(self.right_plant_in_odom_frame_history) > 200:
+                            self.right_plant_in_odom_frame_history.pop(0)
 
                     # Publish the points in each frame
                     self.publish_point(sensor_frame, plant_localization_in_sensor_frame, stamp)
                     self.publish_point("base_link", plant_in_robot_frame, stamp)
                     self.publish_point("odom", plant_in_odom_frame, stamp)
-
-                    # Publish the marker for RViz visualization
-                    self.publish_plant_marker(plant_in_odom_frame, "odom", stamp)
+                    self.add_to_odom_map(side, stamp)
 
                 except tf2_ros.LookupException:
                     self.get_logger().error("Transform lookup failed")
@@ -213,8 +246,15 @@ class FeelerLocalization(Node):
                 self.H_hat = float('nan')
                 plant_localization_in_sensor_frame = [float('nan'), float('nan'), float('nan')]
                 plant_in_robot_frame = [float('nan'), float('nan'), float('nan')]
-                plant_in_global_frame = [float('nan'), float('nan'), float('nan')]
-
+                plant_in_odom_frame = [float('nan'), float('nan'), float('nan')]
+                if side == "left":
+                    self.left_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                    if len(self.left_plant_in_odom_frame_history) > 200:
+                        self.left_plant_in_odom_frame_history.pop(0)
+                else:
+                    self.right_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                    if len(self.right_plant_in_odom_frame_history) > 200:
+                        self.right_plant_in_odom_frame_history.pop(0)
         else:
             # Store NaN when not in contact
             self.D_hat = float('nan')
@@ -222,7 +262,123 @@ class FeelerLocalization(Node):
             self.H_hat = float('nan')
             plant_localization_in_sensor_frame = [float('nan'), float('nan'), float('nan')]
             plant_in_robot_frame = [float('nan'), float('nan'), float('nan')]
-            plant_in_global_frame = [float('nan'), float('nan'), float('nan')]
+            plant_in_odom_frame = [float('nan'), float('nan'), float('nan')]
+            if side == "left":
+                self.left_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                if len(self.left_plant_in_odom_frame_history) > 200:
+                    self.left_plant_in_odom_frame_history.pop(0)
+            else:
+                self.right_plant_in_odom_frame_history.append(plant_in_odom_frame)
+                if len(self.right_plant_in_odom_frame_history) > 200:
+                    self.right_plant_in_odom_frame_history.pop(0)
+
+    def add_to_odom_map(self, side, stamp):
+        if side == "left":
+            plant_in_odom_history = self.left_plant_in_odom_frame_history
+            contact_history = self.left_contact_history
+            sensor_frame="left_sensor"
+        else:
+            plant_in_odom_history = self.right_plant_in_odom_frame_history
+            contact_history = self.right_contact_history
+            sensor_frame="right_sensor"
+            
+        row_threshold = 1  # Threshold distance to consider the same row, in meters
+
+        # Sensor tag based on the provided sensor index
+        sensor_tag = side
+
+        contact_states = [80.0, 90.0]  # In Contact = 80.0, Nearing Crash = 90.0
+
+        start_idx = None
+        end_idx = None
+    
+        # Iterate backwards to find the last transition into a contact state
+        for i in range(len(contact_history) - 1, 1, -1):
+            if contact_history[i] in contact_states and contact_history[i - 1] not in contact_states:
+                start_idx = i
+                break
+                
+        #if after looping through everthing we haven't found a transition, set the start index to the first value. If the contact history at that value is not in contact, there is no contact to map, return
+        if start_idx is None:
+            start_idx=0
+            if contact_history[start_idx] not in contact_states:
+                self.get_logger().info('Return from here')
+                return
+                
+        #set the end index to the final contact state. If the final index is not in contact and localizations in the plant_in_odom_history have already been mapped, so return.       
+        end_idx = len(contact_history) - 1
+        if contact_history[end_idx] not in contact_states:
+            self.get_logger().info('Return from there.')
+            return
+
+        #reduce noise in the mapping from short contact periods
+        if end_idx - start_idx < 4:
+            return
+            
+        #self.get_logger().info(f'Start idx:{start_idx}, End idx:{end_idx}')
+
+        if start_idx is not None and end_idx is not None and start_idx < end_idx:
+            # Extract the localization data during the contact period
+            valid_localizations = plant_in_odom_history[start_idx:end_idx]
+            
+            # Filter out NaN values and calculate the average of non-NaN values for x and y
+            x_values = [loc[0] for loc in valid_localizations if not math.isnan(loc[0])]
+            y_values = [loc[1] for loc in valid_localizations if not math.isnan(loc[1])]
+
+            # Calculate current point based on non-NaN values
+            if len(x_values) > 0 and len(y_values) > 0:
+                current_point = [
+                    sum(x_values) / len(x_values),  # Average of non-NaN x values
+                    sum(y_values) / len(y_values),  # Average of non-NaN y values
+                    1  # Set z to 1
+                ]
+            else:
+                return
+
+            #self.get_logger().info(f'{current_point}') 
+            
+            # Check if there is another point within 0.13 meters
+            if len(self.odom_plant_map) > 0:
+                distances = [math.sqrt((map_point[0] - current_point[0]) ** 2 + (map_point[1] - current_point[1]) ** 2)
+                             for map_point in self.odom_plant_map]
+                close_point_idx = next((i for i, dist in enumerate(distances) if dist < 0.13), None)
+            else:
+                close_point_idx = None
+
+            if close_point_idx is None:
+                # No close point, add as new entry with a new marker ID
+                new_marker_id = len(self.odom_plant_map)
+                self.odom_plant_map.append([current_point[0], current_point[1], self.row_number, sensor_tag, new_marker_id])
+                
+                map_msg = PointStamped()
+                map_msg.header.stamp = stamp
+                map_msg.header.frame_id = sensor_tag
+                map_msg.point.x = current_point[0]
+                map_msg.point.y = current_point[1]
+                map_msg.point.z = float(self.row_number)
+                self.map_update_pub.publish(map_msg)
+
+                # Publish the marker with the new marker ID
+                self.publish_plant_marker(current_point, sensor_frame, stamp, new_marker_id)
+                
+            else:
+                # Update the existing point and marker
+                self.odom_plant_map[close_point_idx][0] = (self.odom_plant_map[close_point_idx][0] + current_point[0]) / 2
+                self.odom_plant_map[close_point_idx][1] = (self.odom_plant_map[close_point_idx][1] + current_point[1]) / 2
+                self.odom_plant_map[close_point_idx][2] = self.odom_plant_map[close_point_idx][2]  # Maintain the existing row number
+                self.odom_plant_map[close_point_idx][3] = sensor_tag  # Update the sensor tag
+                marker_id = self.odom_plant_map[close_point_idx][4]  # Use the existing marker ID
+
+                map_msg = PointStamped()
+                map_msg.header.stamp = stamp
+                map_msg.header.frame_id = sensor_tag
+                map_msg.point.x = self.odom_plant_map[close_point_idx][0]
+                map_msg.point.y = self.odom_plant_map[close_point_idx][1]
+                map_msg.point.z = float(self.odom_plant_map[close_point_idx][2])
+                self.map_update_pub.publish(map_msg)
+
+                # Update the marker with the same marker ID
+                self.publish_plant_marker(self.odom_plant_map[close_point_idx][:2], "odom", stamp, marker_id)
 
     def publish_point(self, frame_id, point, stamp):
         point_msg = PointStamped()
@@ -237,14 +393,15 @@ class FeelerLocalization(Node):
         elif frame_id == "base_link":
             self.robot_frame_pub.publish(point_msg)
         elif frame_id == "odom":
-            self.global_frame_pub.publish(point_msg)
+            self.odom_frame_pub.publish(point_msg)
 
-    def publish_plant_marker(self, plant_position, frame_id, stamp):
+    def publish_plant_marker(self, plant_position, frame_id, stamp, marker_id):
+        
         marker = Marker()
         marker.header.frame_id = frame_id
         marker.header.stamp = stamp
         marker.ns = "plants"
-        marker.id = int(stamp.nanosec)  # Unique ID based on timestamp
+        marker.id = marker_id  # Use the provided marker_id for consistent identification
         marker.type = Marker.CYLINDER
         marker.action = Marker.ADD
         marker.pose.position.x = plant_position[0]
@@ -257,12 +414,13 @@ class FeelerLocalization(Node):
         marker.scale.x = 0.03  # Diameter of the cylinder
         marker.scale.y = 0.03  # Diameter of the cylinder
         marker.scale.z = 3.0  # Height of the cylinder
-        marker.color.a = 0.2  # Alpha (opacity)
+        marker.color.a = 1.0  # Alpha (opacity)
         marker.color.r = 0.1
         marker.color.g = 1.0  # Green color
         marker.color.b = 0.0
 
         self.marker_pub.publish(marker)
+
 
 def main(args=None):
     rclpy.init(args=args)

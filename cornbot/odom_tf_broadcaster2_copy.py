@@ -52,13 +52,13 @@ class OdomTfBroadcaster(Node):
             # Continue broadcasting the transform as in the current approach
             if self.timer.is_canceled():
                 self.timer = self.create_timer(0.001, self.broadcast_transform)
-            self.get_logger().info(f'Using GNSS-only approach for fix type: {self.fix_string}')
+            #self.get_logger().info(f'Using GNSS-only approach for fix type: {self.fix_string}')
 
         elif self.fix_string == 'RTK Fixed, xFill':
             # Continue broadcasting the transform as in the current approach
             if self.timer.is_canceled():
                 self.timer = self.create_timer(0.001, self.broadcast_transform)
-            self.get_logger().info(f'Using GNSS odometry for fix type: {self.fix_string}')
+            #self.get_logger().info(f'Using GNSS odometry for fix type: {self.fix_string}')
 
     def fix_quality_callback(self, msg):
         self.fix_string = msg.data
