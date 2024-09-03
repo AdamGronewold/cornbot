@@ -8,10 +8,14 @@ Panels:
         - /TF1
         - /TF1/Frames1
         - /TF1/Tree1
-        - /Marker1
+        - /Grid1
+        - /PlantMarkers1
         - /Imu1
         - /Imu1/Axes properties1
         - /Imu1/Acceleration properties1
+        - /Axes1
+        - /UnitGrid1
+        - /GoalPointsMarker1
       Splitter Ratio: 0.5
     Tree Height: 780
   - Class: rviz_common/Selection
@@ -120,7 +124,7 @@ Visualization Manager:
       Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: true
+        All Enabled: false
         base_link:
           Value: true
         front_left_wheel:
@@ -130,11 +134,11 @@ Visualization Manager:
         gnss:
           Value: true
         imu_link:
-          Value: true
+          Value: false
         left_sensor:
           Value: true
         odom:
-          Value: true
+          Value: false
         rear_left_wheel:
           Value: true
         rear_right_wheel:
@@ -144,8 +148,8 @@ Visualization Manager:
         sensor_mount:
           Value: true
         world:
-          Value: true
-      Marker Scale: 0.75
+          Value: false
+      Marker Scale: 1
       Name: TF
       Show Arrows: false
       Show Axes: true
@@ -188,21 +192,21 @@ Visualization Manager:
         Y: 0
         Z: 0
       Plane: XY
-      Plane Cell Count: 3500
+      Plane Cell Count: 150000
       Reference Frame: <Fixed Frame>
       Value: true
     - Class: rviz_default_plugins/Marker
       Enabled: true
-      Name: Marker
+      Name: PlantMarkers
       Namespaces:
-        plants: true
+        {}
       Topic:
         Depth: 5
         Durability Policy: Volatile
         Filter size: 10
         History Policy: Keep Last
         Reliability Policy: Reliable
-        Value: /cornbot/plant_marker
+        Value: /plant_marker
       Value: true
     - Acceleration properties:
         Acc. vector alpha: 1
@@ -232,6 +236,44 @@ Visualization Manager:
         Value: /cornbot/imu/data
       Value: false
       fixed_frame_orientation: true
+    - Class: rviz_default_plugins/Axes
+      Enabled: true
+      Length: 100
+      Name: Axes
+      Radius: 0.10000000149011612
+      Reference Frame: odom
+      Value: true
+    - Alpha: 1
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 255; 255; 255
+      Enabled: false
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: UnitGrid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0.019999999552965164
+      Plane: XY
+      Plane Cell Count: 100
+      Reference Frame: <Fixed Frame>
+      Value: false
+    - Class: rviz_default_plugins/Marker
+      Enabled: true
+      Name: GoalPointsMarker
+      Namespaces:
+        goal_points: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        Filter size: 10
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /goal_marker
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 195; 216; 255
@@ -278,25 +320,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/XYOrbit
-      Distance: 4.086598873138428
+      Distance: 4.262443542480469
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: -0.2569209337234497
-        Y: 0.06879279017448425
+        X: -0.05289316177368164
+        Y: -0.01423114538192749
         Z: 0
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.3897971212863922
+      Pitch: 0.05266048386693001
       Target Frame: base_link
       Value: XYOrbit (rviz_default_plugins)
-      Yaw: 3.8607373237609863
+      Yaw: 1.064404845237732
     Saved:
       - Class: rviz_default_plugins/ThirdPersonFollower
         Distance: 3.5261945724487305

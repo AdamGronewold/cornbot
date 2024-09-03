@@ -7,6 +7,10 @@ from message_filters import Subscriber, ApproximateTimeSynchronizer
 import tf2_ros
 from tf2_ros import TransformListener, Buffer
 import math
+import numpy as np
+from std_srvs.srv import Trigger
+import json
+
 
 class FeelerLocalization(Node):
     def __init__(self):
@@ -41,8 +45,12 @@ class FeelerLocalization(Node):
         self.robot_frame_pub = self.create_publisher(PointStamped, 'plants/localization/robot_frame', 10)
         self.odom_frame_pub = self.create_publisher(PointStamped, 'plants/localization/odom_frame', 10)
         self.map_update_pub = self.create_publisher(PointStamped, 'plants/mapping/odom_frame', 10)
-        self.marker_pub = self.create_publisher(Marker, '/cornbot/plant_marker', 100)
+        self.marker_pub = self.create_publisher(Marker, '/plant_marker', 100)
 
+        # Service for map requests
+        self.map_service = self.create_service(Trigger, '/odom_plant_map', self.handle_get_map_request)
+
+        
         # Initializations
         self.left_contact_state = 0.0
         self.left_angle = 0.0
@@ -335,19 +343,36 @@ class FeelerLocalization(Node):
             else:
                 return
 
-            #self.get_logger().info(f'{current_point}') 
+            #self.get_logger().info(f'{self.odom_plant_map}') 
             
             # Check if there is another point within 0.13 meters
+            #self.get_logger().info(f'{len(self.odom_plant_map)}')
             if len(self.odom_plant_map) > 0:
                 distances = [math.sqrt((map_point[0] - current_point[0]) ** 2 + (map_point[1] - current_point[1]) ** 2)
                              for map_point in self.odom_plant_map]
+                #self.get_logger().info(f'{distances}')
                 close_point_idx = next((i for i, dist in enumerate(distances) if dist < 0.13), None)
             else:
                 close_point_idx = None
-
+            #self.get_logger().info(f'{close_point_idx}')
             if close_point_idx is None:
                 # No close point, add as new entry with a new marker ID
                 new_marker_id = len(self.odom_plant_map)
+                               
+                # Compute Euclidean distances from current point to all points in the global map
+                if len(self.odom_plant_map) > 0:
+                    distances = [math.sqrt((map_point[0] - current_point[0]) ** 2 + (map_point[1] - current_point[1]) ** 2)
+                                 for map_point in self.odom_plant_map]
+                    min_distance = np.min(distances)
+                    min_idx = np.argmin(distances)
+
+                    # Determine the row number based on the closest point and its sensor tag
+                    
+                    if min_distance < row_threshold and self.odom_plant_map[min_idx][3] == sensor_tag:
+                        self.row_number = self.odom_plant_map[min_idx][2]  # Assign to existing row
+                    else:
+                        self.row_number += 1  # Create a new row
+                    
                 self.odom_plant_map.append([current_point[0], current_point[1], self.row_number, sensor_tag, new_marker_id])
                 
                 map_msg = PointStamped()
@@ -363,6 +388,7 @@ class FeelerLocalization(Node):
                 
             else:
                 # Update the existing point and marker
+                
                 self.odom_plant_map[close_point_idx][0] = (self.odom_plant_map[close_point_idx][0] + current_point[0]) / 2
                 self.odom_plant_map[close_point_idx][1] = (self.odom_plant_map[close_point_idx][1] + current_point[1]) / 2
                 self.odom_plant_map[close_point_idx][2] = self.odom_plant_map[close_point_idx][2]  # Maintain the existing row number
@@ -380,6 +406,19 @@ class FeelerLocalization(Node):
                 # Update the marker with the same marker ID
                 self.publish_plant_marker(self.odom_plant_map[close_point_idx][:2], "odom", stamp, marker_id)
 
+    def handle_get_map_request(self, request, response):
+        try:
+            # Serialize the map to a JSON string
+            map_str = json.dumps([(round(x, 4), round(y, 4), row, sensor, marker) for (x, y, row, sensor, marker) in self.odom_plant_map])
+            response.success = True
+            response.message = map_str
+        except Exception as e:
+            self.get_logger().error(f"Failed to serialize map: {str(e)}")
+            response.success = False
+            response.message = str(e)
+        return response
+
+    
     def publish_point(self, frame_id, point, stamp):
         point_msg = PointStamped()
         point_msg.header.stamp = stamp

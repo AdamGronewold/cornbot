@@ -27,7 +27,7 @@ setup(
     entry_points={
         'console_scripts': [
             # Nodes made in 2023
-            'motor_control_node = cornbot.motor_control_function:main',
+            #'motor_control_node = cornbot.motor_control_function:main',
             'xbox_teleop_node = cornbot.xbox_teleop:main',
             #'gnss_node = cornbot.gps_gnss_function:main',
             #'sensor_node = cornbot.sensor_hub_function:main', #no longer works with current hardware
@@ -38,10 +38,11 @@ setup(
             'gnss_node2 = cornbot.gps_gnss_function_2024:main',
             'motor_control_node2 = cornbot.motor_control_function_2024:main',
             'joint_state_node = cornbot.joint_state_publisher:main',
-            'odom_tf_broadcaster = cornbot.odom_tf_broadcaster:main',
-            'odom_tf_broadcaster2 = cornbot.odom_tf_broadcaster2_copy:main',
+            #'odom_tf_broadcaster2 = cornbot.odom_tf_broadcaster2:main',
             'feeler_state_node = cornbot.feeler_contact_state_id:main',
             'feeler_localization = cornbot.feeler_localization:main',
+            'navigation_node = cornbot.navigation_node:main',
+            #'odom_tf_broadcaster = cornbot.odom_tf_broadcaster:main',
             #'feeler_plot = cornbot.feeler_state_plotter:main',
             #'imu_node2 = cornbot.imu_node_2024:main',
             #'init_heading_node = cornbot.initialization_sequence_2024:main',

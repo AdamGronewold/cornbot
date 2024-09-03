@@ -88,8 +88,9 @@ def main(args=None):
     try:
         rclpy.spin(motor_control_node) #spin our motor controller node
     except KeyboardInterrupt:
-        time.sleep(2)
         motor_control_node.get_logger().fatal("Keyboard interrupt of ROS2 spin on Motor Control Node. Killing node. Closing serial.")
+        motor_control_node.teensy.write(bytes('<0.0, 0.0>', 'utf-8'))
+        time.sleep(1)
         motor_control_node.teensy.close()
         motor_control_node.destroy_node()
         rclpy.shutdown()

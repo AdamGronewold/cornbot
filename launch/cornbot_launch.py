@@ -59,7 +59,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=6.0,
+            period=3.0,
             actions=[
                 Node(
                     package='cornbot',
@@ -70,20 +70,9 @@ def generate_launch_description():
                 ),
             ]
         ),
+        
         TimerAction(
-            period=8.0,
-            actions=[
-                Node(
-                    package='cornbot',
-                    executable='odom_tf_broadcaster2', 
-                    name='odom_tf_broadcaster',   
-                    namespace='cornbot',    
-                    output='screen',
-                ),
-            ]
-        ),
-        TimerAction(
-            period=10.0,
+            period=4.0,
             actions=[
                 Node(
                     package='robot_state_publisher',
@@ -97,7 +86,7 @@ def generate_launch_description():
         ),      
 
         TimerAction(
-            period=12.0,
+            period=5.0,
             actions=[
                 Node(
                     package='cornbot',
@@ -110,7 +99,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=14.0,
+            period=6.0,
             actions=[
                 Node(
                     package='cornbot',
@@ -123,7 +112,7 @@ def generate_launch_description():
         ),
 
         TimerAction(
-            period=20.0,
+            period=7.0,
             actions=[
                 Node(
                     package='rviz2',
@@ -148,6 +137,18 @@ def generate_launch_description():
                         }.items()
                 ),
             ]
-        )        
+        ), 
+        TimerAction(
+            period=10.0,
+            actions=[
+                Node(
+                    package='cornbot',
+                    executable='navigation_node', 
+                    name='navigation_node',   
+                    namespace='cornbot',    
+                    output='screen',
+                ),
+            ]
+        ),     
     ])
 
