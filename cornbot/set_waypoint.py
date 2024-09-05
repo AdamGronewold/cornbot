@@ -10,7 +10,7 @@ class GpsWaypointCollector(Node):
         super().__init__('gps_waypoint_collector')
         self.subscription = self.create_subscription(
             PointStamped,
-            'cornbot/gnss/positioning/lat_lon_stamped_topic',
+            '/gnss/positioning/lat_lon_stamped_topic',
             self.listener_callback,
             1)
         self.subscription  # prevent unused variable warning

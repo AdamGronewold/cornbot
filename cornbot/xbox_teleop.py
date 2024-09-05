@@ -295,8 +295,8 @@ class XBoxTeleopNode(Node): #Make a subclass of the Node class called "SpeedRefP
 
     def __init__(self):
         super().__init__('xbox_teleop_node') #call the constructor of the class from which this class is inhereted, providing the new node name as "xbox_teleop_node"
-        self.publisher_ = self.create_publisher(String, 'cornbot/speed_ref_topic', 10) #declares publisher publishes String messages on the "cornbot/speed_ref_topic" topic, with a max queue size of 10
-        self.publisher2_ = self.create_publisher(Bool, 'cornbot/data_logging', 10) #declares publisher publishes String messages on the "cornbot/speed_ref_topic" topic, with a max queue size of 10
+        self.publisher_ = self.create_publisher(String, '/speed_ref_topic', 10) #declares publisher publishes String messages on the "cornbot/speed_ref_topic" topic, with a max queue size of 10
+        self.publisher2_ = self.create_publisher(Bool, '/data_logging', 10) #declares publisher publishes String messages on the "cornbot/speed_ref_topic" topic, with a max queue size of 10
 
     def ref_speed_publish_function(self, string_to_pub):
         msg = String()

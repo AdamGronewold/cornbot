@@ -46,7 +46,7 @@ setup(
             #'feeler_plot = cornbot.feeler_state_plotter:main',
             #'imu_node2 = cornbot.imu_node_2024:main',
             #'init_heading_node = cornbot.initialization_sequence_2024:main',
-            #'get_waypoint_node = cornbot.set_waypoint:main', 
+            'get_waypoint_node = cornbot.set_waypoint:main', 
             #'waypoint_nav = cornbot.waypoint_nav2:main',
             #'waypoint_nav2 = cornbot.waypoint_nav2_1:main',
             #'feeler_control = cornbot.feeler_controller_dev:main',

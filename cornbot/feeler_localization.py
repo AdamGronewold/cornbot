@@ -310,13 +310,13 @@ class FeelerLocalization(Node):
         if start_idx is None:
             start_idx=0
             if contact_history[start_idx] not in contact_states:
-                self.get_logger().info('Return from here')
+                #self.get_logger().info('Return from here')
                 return
                 
         #set the end index to the final contact state. If the final index is not in contact and localizations in the plant_in_odom_history have already been mapped, so return.       
         end_idx = len(contact_history) - 1
         if contact_history[end_idx] not in contact_states:
-            self.get_logger().info('Return from there.')
+            #self.get_logger().info('Return from there.')
             return
 
         #reduce noise in the mapping from short contact periods
