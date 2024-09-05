@@ -49,7 +49,7 @@ class NavNode(Node):
         self.goal_marker_pub = self.create_publisher(Marker, '/goal_marker', 100)
         self.pursuit_marker_pub = self.create_publisher(Marker, '/pursuit_marker', 50)  # Added for pursuit markers
         self.path_marker_pub = self.create_publisher(Marker, '/path_marker', 50)  # Added for path markers
-        self.lookahead_marker_pub = self.create_publisher(Marker, '/lookahead_marker', 50)
+
         
         #Broadcast so we see changes in RViz
         self.timer = self.create_timer(0.008, self.broadcast_transform)
@@ -73,6 +73,7 @@ class NavNode(Node):
         elif self.fix_string in ('RTK Fixed, xFill','RTK Float, OmniSTAT XP/HP, Location RTK, RTX', 'Differential GPS by SBAS'):
             if self.timer.is_canceled():
                 self.timer = self.create_timer(0.001, self.broadcast_transform)
+
     def update_position_callback(self, msg):
                 
         self.current_lat=msg.point.x
@@ -183,7 +184,7 @@ class NavNode(Node):
             #self.get_logger().info('Service call completed.')
             if response.success:
                 self.odom_plant_map = json.loads(response.message)
-                #self.get_logger().info(f'Current received plant map: {self.odom_plant_map}')
+                self.get_logger().info(f'Current received plant map: {self.odom_plant_map}')
         except Exception as e:
             self.get_logger().error(f'Map service call failed: {e}')
 
@@ -299,14 +300,14 @@ class NavNode(Node):
         self.current_goal_index = 0  # Assuming this starts at the first goal index
         self.planning_distance = 3  # only plan 3 meters ahead of the robot based on the goal_points
         self.obstactle_decay_buffer = -20  # Exponential padding away from plants in A*
-        self.grid_size = 0.02  # A* grid size for search
+        self.grid_size = 0.05  # A* grid size for search
         self.request_map_update()  # Initialize the global map to store plant locations, sets self.odom_plant_map
         self.local_map_mask = []  # map used in A*
         
         # Pure Pursuit Values
         self.Ld = 0.50  # Lookahead distance in meters
         self.goal_thresh = 0.5  # Goal threshold in meters
-        self.v_ref = -0.2  # Nominal speed set for the robot in m/s, negative is forward (sorry)
+        self.v_ref = -0.1  # Nominal speed set for the robot in m/s, negative is forward (sorry)
         self.buffer_size = 150  # only keep 150 timesteps at most
         self.plan_path()
         
@@ -331,7 +332,7 @@ class NavNode(Node):
             marker.scale.z = 20.0  # Height of the cylinder
             marker.color.a = 0.5  # Alpha (opacity)
             marker.color.r = 1.0
-            marker.color.g = 0.0
+            marker.color.g = 0.0  # Green color
             marker.color.b = 0.0
 
             self.goal_marker_pub.publish(marker)
@@ -385,7 +386,7 @@ class NavNode(Node):
         self.calculate_circle_and_speeds()  # Calculate the circle and wheel speeds
         # Publish new reference speeds
         self.draw_pursuit()
-        #self.publish_ref_speed(self.left_speed_ref, self.right_speed_ref)
+        self.publish_ref_speed(self.left_speed_ref, self.right_speed_ref)
 
     def find_Ld_point(self):
         try:
@@ -465,7 +466,7 @@ class NavNode(Node):
                     self.right_speed_ref = self.v_ref * (self.turn_rad - self.track / 2) / self.turn_rad
                     self.left_speed_ref = self.v_ref * (self.turn_rad + self.track / 2) / self.turn_rad
             elif 30 < angle_dif_deg < 330:
-                self.turn_rad = 0.3
+                self.turn_rad = 0.2
                 self.turn_center_x = self.current_x + self.turn_rad * perp_vector[0]
                 self.turn_center_y = self.current_y + self.turn_rad * perp_vector[1]
                 if cross > 0:
@@ -503,9 +504,6 @@ class NavNode(Node):
         circle_marker.color.g = 1.0
         circle_marker.color.b = 0.0
         self.pursuit_marker_pub.publish(circle_marker)
-        self.draw_lookahead()
-        
-    def draw_lookahead(self):
 
         # Publish an arrow at the lookahead point (Lx, Ly)
         arrow_marker = Marker()
@@ -515,33 +513,26 @@ class NavNode(Node):
         arrow_marker.id = 1
         arrow_marker.type = Marker.ARROW
         arrow_marker.action = Marker.ADD
-
-        # Set the tip of the arrow to be at Lx, Ly with z = 0
         arrow_marker.pose.position.x = self.Lx
         arrow_marker.pose.position.y = self.Ly
-        arrow_marker.pose.position.z = 1.0
+        arrow_marker.pose.position.z = 0.5
 
-        # Adjust the orientation of the arrow to point downward in Z-axis
-        # Quaternion for pointing down in the Z direction
+        # Set the arrow orientation to point downward in Z (quaternion for downward in ROS)
         arrow_marker.pose.orientation.x = 0.0
-        arrow_marker.pose.orientation.y = -0.7071068
+        arrow_marker.pose.orientation.y = 0.0
         arrow_marker.pose.orientation.z = 0.0
-        arrow_marker.pose.orientation.w = -0.7071068
+        arrow_marker.pose.orientation.w = 1.0
 
-        # Set the scale to ensure the arrow is 1 unit long and 5 cm wide
-        arrow_marker.scale.x = 1.0  # Length of the arrow along the Z-axis (1 unit long)
-        arrow_marker.scale.y = 0.05  # Width of the arrow (5 cm)
-        arrow_marker.scale.z = 0.05  # Thickness of the arrow
+        arrow_marker.scale.x = 0.0  # Arrow length along X is set to 0 since we point downward
+        arrow_marker.scale.y = 0.0  # Set Y and Z to control the arrow's thickness and tip
+        arrow_marker.scale.z = 0.5  # The length of the arrow pointing downward
 
-        # Set the color of the arrow (purple)
-        arrow_marker.color.a = 0.5 # Opaque
+        arrow_marker.color.a = 1.0  # Opaque
         arrow_marker.color.r = 1.0
-        arrow_marker.color.g = 0.65
-        arrow_marker.color.b = 0.0
-
-        # Publish the marker
-        self.lookahead_marker_pub.publish(arrow_marker)
-
+        arrow_marker.color.g = 0.0
+        arrow_marker.color.b = 1.0
+        self.pursuit_marker_pub.publish(arrow_marker)
+ 
         
     def draw_path(self):
         # Publish an orange line with triangle markers for the planned path
@@ -611,8 +602,7 @@ class NavNode(Node):
         except:
             self.get_logger().info('Failed to identify planning segment.')
 
-    def astar_seg_plan(self, start_pose, goal_pose, odom_map): 
-        odom_map=np.array(odom_map, dtype=object) 
+    def astar_seg_plan(self, start_pose, goal_pose, odom_map):  
         try:
             try:
                 #Calculate the direction vector from start to goal
@@ -671,18 +661,17 @@ class NavNode(Node):
             try:
                 #mask the current map to the search space so we don't need to compare to every single plant
                 if odom_map is not None and len(odom_map) > 0:
-                   
                     min_x = np.min(X)
                     max_x = np.max(X)
                     min_y = np.min(Y)
                     max_y = np.max(Y)
                     
-                    inside_mask = (odom_map[:, 0] >= min_x) & (odom_map[:, 0] <= max_x) & (odom_map[:, 1] >= min_y) & (odom_map[:, 1] <= max_y)
-                    
+                    inside_mask = (odom_map[:, 0] >= min_x) & (odom_map[:, 0] <= max_x) & \
+                                  (odom_map[:, 1] >= min_y) & (odom_map[:, 1] <= max_y)
+                              
                     local_map = odom_map[inside_mask, :]
                 else:
-                    local_map = np.empty((0, 5))
-
+                    local_map = np.empty((0, 3))
             except Exception as e:
                 self.get_logger().info(f'Exception during map masking')
         

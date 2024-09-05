@@ -1,0 +1,78 @@
+running egg_info
+creating build/cornbot/cornbot.egg-info
+writing build/cornbot/cornbot.egg-info/PKG-INFO
+writing dependency_links to build/cornbot/cornbot.egg-info/dependency_links.txt
+writing entry points to build/cornbot/cornbot.egg-info/entry_points.txt
+writing requirements to build/cornbot/cornbot.egg-info/requires.txt
+writing top-level names to build/cornbot/cornbot.egg-info/top_level.txt
+writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+reading manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'
+running build
+running build_py
+creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build
+creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib
+creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/feeler_contact_state_id.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/joint_state_publisher.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/odom_tf_broadcaster2.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/navigation_node.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/feeler_localization.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+copying cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot
+running install
+running install_lib
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_contact_state_id.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/joint_state_publisher.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/odom_tf_broadcaster2.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/navigation_node.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_localization.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/motor_control_function.py to motor_control_function.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/xbox_teleop.py to xbox_teleop.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_contact_state_id.py to feeler_contact_state_id.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/joint_state_publisher.py to joint_state_publisher.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/__init__.py to __init__.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_function_2024.py to feeler_function_2024.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/motor_control_function_2024.py to motor_control_function_2024.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/odom_tf_broadcaster2.py to odom_tf_broadcaster2.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/navigation_node.py to navigation_node.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_localization.py to feeler_localization.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/set_waypoint.py to set_waypoint.cpython-310.pyc
+byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/gps_gnss_function_2024.py to gps_gnss_function_2024.cpython-310.pyc
+running install_data
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages
+copying resource/cornbot -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages
+copying package.xml -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+copying launch/cornbot_launch.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+copying launch/feeler_launch.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch
+creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf
+copying urdf/cornbot.urdf -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf
+running install_egg_info
+Copying build/cornbot/cornbot.egg-info to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot-0.0.2-py3.10.egg-info
+running install_scripts
+Installing feeler_localization script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing feeler_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing feeler_state_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing get_waypoint_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing gnss_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing joint_state_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing motor_control_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing navigation_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+Installing xbox_teleop_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot
+writing list of installed files to '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log'

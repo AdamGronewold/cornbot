@@ -1,0 +1,105 @@
+[0.000000] (-) TimerEvent: {}
+[0.000604] (cornbot) JobQueued: {'identifier': 'cornbot', 'dependencies': OrderedDict()}
+[0.001101] (cornbot) JobStarted: {'identifier': 'cornbot'}
+[0.099490] (-) TimerEvent: {}
+[0.200087] (-) TimerEvent: {}
+[0.300674] (-) TimerEvent: {}
+[0.401195] (-) TimerEvent: {}
+[0.501646] (-) TimerEvent: {}
+[0.602244] (-) TimerEvent: {}
+[0.702850] (-) TimerEvent: {}
+[0.803405] (-) TimerEvent: {}
+[0.903966] (-) TimerEvent: {}
+[1.004502] (-) TimerEvent: {}
+[1.105040] (-) TimerEvent: {}
+[1.205504] (-) TimerEvent: {}
+[1.306113] (-) TimerEvent: {}
+[1.315305] (cornbot) Command: {'cmd': ['/usr/bin/python3', '-W', 'ignore:setup.py install is deprecated', 'setup.py', 'egg_info', '--egg-base', 'build/cornbot', 'build', '--build-base', '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build', 'install', '--record', '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log', '--single-version-externally-managed', 'install_data'], 'cwd': '/home/adamgronewold/ros2_ws/src/cornbot', 'env': {'GJS_DEBUG_TOPICS': 'JS ERROR;JS LOG', 'LESSOPEN': '| /usr/bin/lesspipe %s', 'USER': 'adamgronewold', 'XDG_SESSION_TYPE': 'x11', 'SHLVL': '1', 'LD_LIBRARY_PATH': '/home/adamgronewold/ros2_ws/install/microstrain_inertial_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib', 'HOME': '/home/adamgronewold', 'OLDPWD': '/home/adamgronewold/ros2_ws', 'DESKTOP_SESSION': 'ubuntu', 'JETSON_L4T': '36.3.0', 'GIO_LAUNCHED_DESKTOP_FILE': '/usr/share/applications/terminator.desktop', 'ROS_PYTHON_VERSION': '3', 'GNOME_SHELL_SESSION_MODE': 'ubuntu', 'GTK_MODULES': 'gail:atk-bridge', 'JETSON_MODEL': 'NVIDIA Jetson Orin Nano Developer Kit', 'MANAGERPID': '1884', 'SYSTEMD_EXEC_PID': '508462', 'IM_CONFIG_CHECK_ENV': '1', 'DBUS_SESSION_BUS_ADDRESS': 'unix:path=/run/user/1000/bus', 'COLORTERM': 'truecolor', 'TERMINATOR_DBUS_NAME': 'net.tenshu.Terminator23558193cd9818af7fe4d2c2f5bd9d00f', 'GIO_LAUNCHED_DESKTOP_FILE_PID': '509238', 'IM_CONFIG_PHASE': '1', 'COLCON_PREFIX_PATH': '/home/adamgronewold/ros2_ws/install', 'ROS_DISTRO': 'humble', 'GTK_IM_MODULE': 'ibus', 'LOGNAME': 'adamgronewold', 'JETSON_MODULE': 'NVIDIA Jetson Orin Nano (Developer kit)', 'JETSON_SERIAL_NUMBER': '1421223036346', 'JOURNAL_STREAM': '8:5397688', '_': '/usr/bin/colcon', 'ROS_VERSION': '2', 'XDG_SESSION_CLASS': 'user', 'USERNAME': 'adamgronewold', 'TERM': 'xterm-256color', 'GNOME_DESKTOP_SESSION_ID': 'this-is-deprecated', 'ROS_LOCALHOST_ONLY': '0', 'WINDOWPATH': '3', 'PATH': '/opt/ros/humble/bin:/home/adamgronewold/.local/bin:/home/adamgronewold/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin', 'SESSION_MANAGER': 'local/robot1:@/tmp/.ICE-unix/508437,unix/robot1:/tmp/.ICE-unix/508437', 'INVOCATION_ID': '3cb9b94353f341ddba0a1c7bd303ff44', 'XDG_MENU_PREFIX': 'gnome-', 'XDG_RUNTIME_DIR': '/run/user/1000', 'DISPLAY': ':1', 'TERMINATOR_DBUS_PATH': '/net/tenshu/Terminator2', 'LANG': 'en_US.UTF-8', 'XDG_CURRENT_DESKTOP': 'ubuntu:GNOME', 'IBUS_DISABLE_SNOOPER': '1', 'XMODIFIERS': '@im=ibus', 'XDG_SESSION_DESKTOP': 'ubuntu', 'XAUTHORITY': '/run/user/1000/gdm/Xauthority', 'LS_COLORS': 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:', 'JETSON_SOC': 'tegra234', 'SSH_AGENT_LAUNCHER': 'gnome-keyring', 'SSH_AUTH_SOCK': '/run/user/1000/keyring/ssh', 'AMENT_PREFIX_PATH': '/home/adamgronewold/ros2_ws/install/microstrain_inertial_rqt:/home/adamgronewold/ros2_ws/install/microstrain_inertial_examples:/home/adamgronewold/ros2_ws/install/cornbot:/home/adamgronewold/ros2_ws/install/microstrain_inertial_driver:/home/adamgronewold/ros2_ws/install/microstrain_inertial_msgs:/home/adamgronewold/ros2_ws/install/microstrain_inertial_description:/opt/ros/humble', 'SHELL': '/bin/bash', 'TERMINATOR_UUID': 'urn:uuid:fcabcd2e-4181-4bef-b15b-e2982ed41c46', 'QT_ACCESSIBILITY': '1', 'GDMSESSION': 'ubuntu', 'LESSCLOSE': '/usr/bin/lesspipe %s %s', 'GPG_AGENT_INFO': '/run/user/1000/gnupg/S.gpg-agent:0:1', 'GJS_DEBUG_OUTPUT': 'stderr', 'QT_IM_MODULE': 'ibus', 'JETSON_CUDA_ARCH_BIN': '8.7', 'PWD': '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot', 'LC_ALL': 'en_US.UTF-8', 'XDG_CONFIG_DIRS': '/etc/xdg/xdg-ubuntu:/etc/xdg', 'XDG_DATA_DIRS': '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop', 'PYTHONPATH': '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/prefix_override:/usr/lib/python3/dist-packages/colcon_core/task/python/colcon_distutils_commands:/home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages:/home/adamgronewold/ros2_ws/install/microstrain_inertial_rqt/lib/python3.10/site-packages:/home/adamgronewold/ros2_ws/install/cornbot/lib/python3.10/site-packages:/home/adamgronewold/ros2_ws/install/microstrain_inertial_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages', 'COLCON': '1', 'VTE_VERSION': '6800', 'JETSON_JETPACK': '6.0', 'CMAKE_PREFIX_PATH': '/home/adamgronewold/ros2_ws/install/microstrain_inertial_examples:/home/adamgronewold/ros2_ws/install/microstrain_inertial_driver:/home/adamgronewold/ros2_ws/install/microstrain_inertial_msgs:/home/adamgronewold/ros2_ws/install/microstrain_inertial_description', 'JETSON_P_NUMBER': 'p3767-0005'}, 'shell': False}
+[1.406480] (-) TimerEvent: {}
+[1.507056] (-) TimerEvent: {}
+[1.607581] (-) TimerEvent: {}
+[1.708042] (-) TimerEvent: {}
+[1.808554] (-) TimerEvent: {}
+[1.840820] (cornbot) StdoutLine: {'line': b'running egg_info\n'}
+[1.842705] (cornbot) StdoutLine: {'line': b'creating build/cornbot/cornbot.egg-info\n'}
+[1.843109] (cornbot) StdoutLine: {'line': b'writing build/cornbot/cornbot.egg-info/PKG-INFO\n'}
+[1.843579] (cornbot) StdoutLine: {'line': b'writing dependency_links to build/cornbot/cornbot.egg-info/dependency_links.txt\n'}
+[1.843944] (cornbot) StdoutLine: {'line': b'writing entry points to build/cornbot/cornbot.egg-info/entry_points.txt\n'}
+[1.844223] (cornbot) StdoutLine: {'line': b'writing requirements to build/cornbot/cornbot.egg-info/requires.txt\n'}
+[1.844480] (cornbot) StdoutLine: {'line': b'writing top-level names to build/cornbot/cornbot.egg-info/top_level.txt\n'}
+[1.844882] (cornbot) StdoutLine: {'line': b"writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'\n"}
+[1.847911] (cornbot) StdoutLine: {'line': b"reading manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'\n"}
+[1.849371] (cornbot) StdoutLine: {'line': b"writing manifest file 'build/cornbot/cornbot.egg-info/SOURCES.txt'\n"}
+[1.849615] (cornbot) StdoutLine: {'line': b'running build\n'}
+[1.849787] (cornbot) StdoutLine: {'line': b'running build_py\n'}
+[1.850086] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build\n'}
+[1.850273] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib\n'}
+[1.850424] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.850576] (cornbot) StdoutLine: {'line': b'copying cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.850763] (cornbot) StdoutLine: {'line': b'copying cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.851034] (cornbot) StdoutLine: {'line': b'copying cornbot/feeler_contact_state_id.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.858583] (cornbot) StdoutLine: {'line': b'copying cornbot/joint_state_publisher.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.859222] (cornbot) StdoutLine: {'line': b'copying cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.859442] (cornbot) StdoutLine: {'line': b'copying cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.859841] (cornbot) StdoutLine: {'line': b'copying cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.860148] (cornbot) StdoutLine: {'line': b'copying cornbot/odom_tf_broadcaster2.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.860405] (cornbot) StdoutLine: {'line': b'copying cornbot/navigation_node.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.860872] (cornbot) StdoutLine: {'line': b'copying cornbot/feeler_localization.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.861165] (cornbot) StdoutLine: {'line': b'copying cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.861394] (cornbot) StdoutLine: {'line': b'copying cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot\n'}
+[1.862187] (cornbot) StdoutLine: {'line': b'running install\n'}
+[1.862823] (cornbot) StdoutLine: {'line': b'running install_lib\n'}
+[1.864229] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.864434] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.864690] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/xbox_teleop.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.864943] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_contact_state_id.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.865176] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/joint_state_publisher.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.865395] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/__init__.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.865586] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.865818] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/motor_control_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.866056] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/odom_tf_broadcaster2.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.866271] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/navigation_node.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.866572] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/feeler_localization.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.866830] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/set_waypoint.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.867036] (cornbot) StdoutLine: {'line': b'copying /home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/build/lib/cornbot/gps_gnss_function_2024.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot\n'}
+[1.868312] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/motor_control_function.py to motor_control_function.cpython-310.pyc\n'}
+[1.869806] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/xbox_teleop.py to xbox_teleop.cpython-310.pyc\n'}
+[1.872965] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_contact_state_id.py to feeler_contact_state_id.cpython-310.pyc\n'}
+[1.875240] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/joint_state_publisher.py to joint_state_publisher.cpython-310.pyc\n'}
+[1.876361] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/__init__.py to __init__.cpython-310.pyc\n'}
+[1.876731] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_function_2024.py to feeler_function_2024.cpython-310.pyc\n'}
+[1.878269] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/motor_control_function_2024.py to motor_control_function_2024.cpython-310.pyc\n'}
+[1.879462] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/odom_tf_broadcaster2.py to odom_tf_broadcaster2.cpython-310.pyc\n'}
+[1.881493] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/navigation_node.py to navigation_node.cpython-310.pyc\n'}
+[1.892443] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/feeler_localization.py to feeler_localization.cpython-310.pyc\n'}
+[1.897061] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/set_waypoint.py to set_waypoint.cpython-310.pyc\n'}
+[1.898052] (cornbot) StdoutLine: {'line': b'byte-compiling /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot/gps_gnss_function_2024.py to gps_gnss_function_2024.cpython-310.pyc\n'}
+[1.902603] (cornbot) StdoutLine: {'line': b'running install_data\n'}
+[1.902849] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index\n'}
+[1.903033] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index\n'}
+[1.903179] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages\n'}
+[1.903348] (cornbot) StdoutLine: {'line': b'copying resource/cornbot -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/ament_index/resource_index/packages\n'}
+[1.903533] (cornbot) StdoutLine: {'line': b'copying package.xml -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot\n'}
+[1.903759] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch\n'}
+[1.903940] (cornbot) StdoutLine: {'line': b'copying launch/cornbot_launch.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch\n'}
+[1.904183] (cornbot) StdoutLine: {'line': b'copying launch/feeler_launch.py -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/launch\n'}
+[1.904419] (cornbot) StdoutLine: {'line': b'creating /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf\n'}
+[1.904582] (cornbot) StdoutLine: {'line': b'copying urdf/cornbot.urdf -> /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/share/cornbot/urdf\n'}
+[1.904743] (cornbot) StdoutLine: {'line': b'running install_egg_info\n'}
+[1.908145] (cornbot) StdoutLine: {'line': b'Copying build/cornbot/cornbot.egg-info to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/python3.10/site-packages/cornbot-0.0.2-py3.10.egg-info\n'}
+[1.908602] (-) TimerEvent: {}
+[1.910008] (cornbot) StdoutLine: {'line': b'running install_scripts\n'}
+[1.948978] (cornbot) StdoutLine: {'line': b'Installing feeler_localization script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.949367] (cornbot) StdoutLine: {'line': b'Installing feeler_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.949606] (cornbot) StdoutLine: {'line': b'Installing feeler_state_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.949833] (cornbot) StdoutLine: {'line': b'Installing get_waypoint_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.950046] (cornbot) StdoutLine: {'line': b'Installing gnss_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.950245] (cornbot) StdoutLine: {'line': b'Installing joint_state_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.950440] (cornbot) StdoutLine: {'line': b'Installing motor_control_node2 script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.950630] (cornbot) StdoutLine: {'line': b'Installing navigation_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.950817] (cornbot) StdoutLine: {'line': b'Installing xbox_teleop_node script to /home/adamgronewold/ros2_ws/src/cornbot/install/cornbot/lib/cornbot\n'}
+[1.951757] (cornbot) StdoutLine: {'line': b"writing list of installed files to '/home/adamgronewold/ros2_ws/src/cornbot/build/cornbot/install.log'\n"}
+[2.008770] (-) TimerEvent: {}
+[2.022503] (cornbot) CommandEnded: {'returncode': 0}
+[2.052960] (cornbot) JobEnded: {'identifier': 'cornbot', 'rc': 0}
+[2.055120] (-) EventReactorShutdown: {}

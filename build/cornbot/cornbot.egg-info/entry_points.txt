@@ -1,0 +1,11 @@
+[console_scripts]
+feeler_localization = cornbot.feeler_localization:main
+feeler_node2 = cornbot.feeler_function_2024:main
+feeler_state_node = cornbot.feeler_contact_state_id:main
+get_waypoint_node = cornbot.set_waypoint:main
+gnss_node2 = cornbot.gps_gnss_function_2024:main
+joint_state_node = cornbot.joint_state_publisher:main
+motor_control_node2 = cornbot.motor_control_function_2024:main
+navigation_node = cornbot.navigation_node:main
+xbox_teleop_node = cornbot.xbox_teleop:main
+

@@ -1,0 +1,268 @@
+<?xml version="1.0"?>
+<robot name="cornbot">
+
+  <!-- World link -->
+  <link name="world"/>
+  <link name="odom"/>
+  <!-- Joint between odom and base_link (static) -->
+  <joint name="world_to_odom" type="fixed">
+    <parent link="world"/>
+    <child link="odom"/>
+    <origin xyz="0 0 0" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- Base link -->
+  <link name="base_link">
+    <visual>
+      <origin xyz="0 0 0.1004" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.503 0.3192 0.2008"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1 0 0 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.503 0.3192 0.2008"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="9.7"/>
+      <inertia ixx="0.1" ixy="0" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    </inertial>
+  </link>
+  
+  <link name="imu_link">
+    <visual>
+      <origin xyz="0.0 0.0 0.0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.02 0.01"/>
+      </geometry>
+      <material name="white">
+        <color rgba="1 1 1 1"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.04 0.02 0.01"/>
+      </geometry>
+    </collision>
+  </link>
+  
+  <joint name="imu_joint" type="fixed">
+    <parent link="base_link"/>
+    <child link="imu_link"/>
+    <origin xyz="0.5 0 0.2268" rpy="0 0 0"/>
+  </joint>
+ 
+ 
+  
+  
+  <!-- Joint between odom and base_link (static) -->
+  <joint name="odom_to_base_link" type="fixed">
+    <parent link="odom"/>
+    <child link="base_link"/>
+    <origin xyz="0 0 0.0762" rpy="0 0 0"/>
+  </joint>
+  
+  <link name="sensor_mount">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.538 0.3492 0.025"/>
+      </geometry>
+      <material name="gray">
+        <color rgba="0.6 0.6 0.6 1.0"/>
+      </material>
+    </visual>
+    <visual>
+      <origin xyz="0.508 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.508 0.076 0.025"/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="0.762 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.03 0.2286 0.025"/>
+      </geometry>
+    </visual>
+    <visual>
+      <origin xyz="-0.04 0 0.3681" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.7112" radius="0.015"/>
+      </geometry>
+    </visual>
+    
+    <collision>
+      <origin xyz="0.508 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.508 0.076 0.025"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="2"/>
+      <inertia ixx="0.1" ixy="0" ixz="0.1" iyy="0.1" iyz="0.1" izz="0.1"/>
+    </inertial>
+  </link>
+  
+  <joint name="sensor_mount_to_base_link" type="fixed">
+    <parent link="base_link"/>
+    <child link="sensor_mount"/>
+    <origin xyz="0 0 0.2018" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- GPS Antenna -->
+  <link name="gnss">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.05" radius="0.08"/>
+      </geometry>
+      <material name="red">
+        <color rgba="1.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.1" radius="0.02"/>
+      </geometry>
+    </collision>
+    <inertial>
+      <mass value="0.5"/>
+      <inertia ixx="0.01" ixy="0" ixz="0" iyy="0.01" iyz="0" izz="0.01"/>
+    </inertial>
+  </link>
+  
+  <joint name="gnss_mount_to_sensor_mount" type="fixed">
+    <parent link="sensor_mount"/>
+    <child link="gnss"/>
+    <origin xyz="-0.04 0 0.7112" rpy="0 0 0"/>
+  </joint>
+  
+  <!-- Front Left Wheel -->
+  <link name="front_left_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.07" radius="0.105"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="front_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_left_wheel"/>
+    <origin xyz="0.134 0.1905 0.035" rpy="-1.570796 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Front Right Wheel -->
+  <link name="front_right_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.07" radius="0.105"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="front_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="front_right_wheel"/>
+    <origin xyz="0.134 -0.1905 0.035" rpy="1.570796 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Left Wheel -->
+  <link name="rear_left_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.07" radius="0.105"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="rear_left_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rear_left_wheel"/>
+    <origin xyz="-0.134 0.1905 0.035" rpy="-1.570796 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+
+  <!-- Rear Right Wheel -->
+  <link name="rear_right_wheel">
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <geometry>
+        <cylinder length="0.07" radius="0.105"/>
+      </geometry>
+      <material name="black">
+        <color rgba="0.0 0.0 0.0 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="rear_right_wheel_joint" type="continuous">
+    <parent link="base_link"/>
+    <child link="rear_right_wheel"/>
+    <origin xyz="-0.134 -0.1905 0.035" rpy="1.570796 0 0"/>
+    <axis xyz="0 0 1"/>
+  </joint>
+  
+  <!-- Left Sensor -->
+  <link name="left_sensor">
+    <visual>
+      <origin xyz="0.1778 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.3556 0.005 0.0508"/> <!-- 14 inches by 2 inches, assuming 0.005m thickness -->
+      </geometry>
+      <material name="light_gray">
+        <color rgba="0.8 0.8 0.8 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="left_sensor_joint" type="continuous">
+    <parent link="sensor_mount"/> 
+    <child link="left_sensor"/>
+    <origin xyz="0.7620 0.1143 0.025" rpy="0 0 1.570796326790"/> 
+    <axis xyz="0 0 1"/> <!-- Rotating about the vertical axis -->
+  </joint>
+
+  <!-- Right Sensor -->
+  <link name="right_sensor">
+    <visual>
+      <origin xyz="0.1778 0 0" rpy="0 0 0"/>
+      <geometry>
+        <box size="0.3556 0.005 0.0508"/> <!-- 14 inches by 2 inches, assuming 0.005m thickness -->
+      </geometry>
+      <material name="light_gray">
+        <color rgba="0.8 0.8 0.8 1.0"/>
+      </material>
+    </visual>
+  </link>
+  
+  <joint name="right_sensor_joint" type="continuous">
+    <parent link="sensor_mount"/> 
+    <child link="right_sensor"/>
+    <origin xyz="0.7620 -0.1143 0.025" rpy="0 0 -1.5707963267"/> 
+    <axis xyz="0 0 1"/> <!-- Rotating about the vertical axis -->
+  </joint>
+
+</robot>
+
